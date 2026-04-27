@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="0239399338454b35a0516ebbf2d21247" Name="Diagram1">
+        <EntityTypeShape EntityType="CargoConnectModel.Admin" Width="1.5" PointX="5.25" PointY="16.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.Bookings" Width="1.5" PointX="9.75" PointY="33.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.ChatAttachments" Width="1.5" PointX="14.25" PointY="23" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.ChatMessages" Width="1.5" PointX="12" PointY="22.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.ChatThreads" Width="1.5" PointX="9.75" PointY="21.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.Checkpoints" Width="1.5" PointX="12.75" PointY="39.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.Customer" Width="1.5" PointX="5.25" PointY="21.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.Driver" Width="1.5" PointX="5.25" PointY="37.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.DriverDocuments" Width="1.5" PointX="7.5" PointY="37.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.Notifications" Width="1.5" PointX="5.25" PointY="42.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.PackageAttributeMapping" Width="1.5" PointX="12" PointY="26.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.PackageAttributes" Width="1.5" PointX="9.75" PointY="18.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.Packages" Width="1.5" PointX="9.75" PointY="25.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.RecipientDetails" Width="1.5" PointX="9.75" PointY="29.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.Requests" Width="1.5" PointX="12.75" PointY="32.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.Reviews" Width="1.5" PointX="15" PointY="36.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.Roles" Width="1.5" PointX="0.75" PointY="29.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.RoutePreferences" Width="1.5" PointX="9.75" PointY="40.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.Routes" Width="1.5" PointX="7.5" PointY="41.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.RouteSchedule" Width="1.5" PointX="9.75" PointY="44.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.Shipments" Width="1.5" PointX="7.5" PointY="26.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.TripCheckpoints" Width="1.5" PointX="15" PointY="42.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.TripDelays" Width="1.5" PointX="15" PointY="46.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.Trips" Width="1.5" PointX="12.75" PointY="43.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.TripStats" Width="1.5" PointX="15" PointY="49.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.Users" Width="1.5" PointX="3" PointY="27.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.UserSuspensions" Width="1.5" PointX="7.5" PointY="22.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.Vehicle" Width="1.5" PointX="7.5" PointY="46.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CargoConnectModel.VehicleDocuments" Width="1.5" PointX="9.75" PointY="47.125" IsExpanded="true" />
+        <AssociationConnector Association="CargoConnectModel.FK__Admin__user_id__5535A963" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__ChatThrea__assig__37703C52" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__UserSuspe__admin__628FA481" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Bookings__custom__208CD6FA" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Bookings__route___2180FB33" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Bookings__shipme__1F98B2C1" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Bookings__trip_i__22751F6C" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__ChatAttac__messa__40F9A68C" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__ChatMessa__sende__3D2915A8" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__ChatMessa__threa__3C34F16F" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__ChatThrea__creat__367C1819" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__ChatThrea__shipm__3587F3E0" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__TripCheck__check__2645B050" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK_Checkpoints_Driver" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK_Checkpoints_Routes" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Customer__user_i__59063A47" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Shipments__custo__05D8E0BE" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Driver__user_id__5DCAEF64" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__DriverDoc__drive__66603565" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Requests__driver__0C85DE4D" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Routes__driver_i__71D1E811" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Trips__driver_id__18EBB532" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Vehicle__driver___693CA210" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Notificat__user___45BE5BA9" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__PackageAt__attri__151B244E" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__PackageAt__packa__14270015" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Packages__shipme__0F624AF8" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Recipient__shipm__08B54D69" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Requests__shipme__73852659" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Reviews__reviewe__31B762FC" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Reviews__target___32AB8735" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Reviews__trip_id__30C33EC3" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Users__role_id__5165187F" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK_RoutePreferences_Route" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Trips__route_id__1AD3FDA4" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK_RouteSchedule_Routes" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__TripCheck__trip___25518C17" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__TripDelay__trip___2A164134" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__Trips__vehicle_r__19DFD96B" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__TripStats__trip___2CF2ADDF" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__UserSuspe__user___619B8048" ManuallyRouted="false" />
+        <AssociationConnector Association="CargoConnectModel.FK__VehicleDo__vehic__6C190EBB" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

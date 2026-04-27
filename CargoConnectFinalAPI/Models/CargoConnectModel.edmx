@@ -1,0 +1,2620 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="CargoConnectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Admin">
+          <Key>
+            <PropertyRef Name="admin_id" />
+          </Key>
+          <Property Name="admin_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="first_name" Type="nvarchar" MaxLength="100" />
+          <Property Name="last_name" Type="nvarchar" MaxLength="100" />
+          <Property Name="CNIC" Type="nvarchar" MaxLength="20" />
+          <Property Name="contact_no" Type="nvarchar" MaxLength="20" />
+          <Property Name="street_no" Type="nvarchar" MaxLength="50" />
+          <Property Name="city" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="Bookings">
+          <Key>
+            <PropertyRef Name="booking_id" />
+          </Key>
+          <Property Name="booking_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="shipment_id" Type="int" Nullable="false" />
+          <Property Name="customer_id" Type="int" Nullable="false" />
+          <Property Name="route_id" Type="int" Nullable="false" />
+          <Property Name="trip_id" Type="int" />
+          <Property Name="status" Type="nvarchar" MaxLength="50" />
+          <Property Name="amount" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="cancel_reason" Type="nvarchar" MaxLength="255" />
+          <Property Name="created_at" Type="datetime" />
+          <Property Name="updated_at" Type="datetime" />
+          <Property Name="booking_type" Type="nvarchar" MaxLength="50" />
+          <Property Name="pickup_date" Type="datetime" />
+          <Property Name="delivery_date" Type="datetime" />
+          <Property Name="estimated_delivery_datetime" Type="datetime" />
+          <Property Name="actual_delivery_datetime" Type="datetime" />
+        </EntityType>
+        <EntityType Name="ChatAttachments">
+          <Key>
+            <PropertyRef Name="attachment_id" />
+          </Key>
+          <Property Name="attachment_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="message_id" Type="int" Nullable="false" />
+          <Property Name="file_url" Type="nvarchar" MaxLength="255" />
+          <Property Name="file_type" Type="nvarchar" MaxLength="50" />
+          <Property Name="uploaded_at" Type="datetime" />
+        </EntityType>
+        <EntityType Name="ChatMessages">
+          <Key>
+            <PropertyRef Name="message_id" />
+          </Key>
+          <Property Name="message_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="thread_id" Type="int" Nullable="false" />
+          <Property Name="sender_user_id" Type="int" Nullable="false" />
+          <Property Name="message_text" Type="nvarchar(max)" />
+          <Property Name="is_read" Type="bit" />
+          <Property Name="sent_at" Type="datetime" />
+        </EntityType>
+        <EntityType Name="ChatThreads">
+          <Key>
+            <PropertyRef Name="thread_id" />
+          </Key>
+          <Property Name="thread_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="thread_type" Type="nvarchar" MaxLength="50" />
+          <Property Name="shipment_id" Type="int" />
+          <Property Name="created_by_user_id" Type="int" Nullable="false" />
+          <Property Name="assigned_admin_id" Type="int" />
+          <Property Name="status" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Checkpoints">
+          <Key>
+            <PropertyRef Name="checkpoint_id" />
+          </Key>
+          <Property Name="checkpoint_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="100" />
+          <Property Name="latitude" Type="float" />
+          <Property Name="longitude" Type="float" />
+          <Property Name="driver_id" Type="int" />
+          <Property Name="route_id" Type="int" Nullable="false" />
+          <Property Name="sequence_no" Type="int" Nullable="false" />
+          <Property Name="reached" Type="bit" />
+        </EntityType>
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="customer_id" />
+          </Key>
+          <Property Name="customer_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="first_name" Type="nvarchar" MaxLength="100" />
+          <Property Name="last_name" Type="nvarchar" MaxLength="100" />
+          <Property Name="CNIC" Type="nvarchar" MaxLength="20" />
+          <Property Name="contact_no" Type="nvarchar" MaxLength="20" />
+          <Property Name="street_no" Type="nvarchar" MaxLength="50" />
+          <Property Name="city" Type="nvarchar" MaxLength="100" />
+          <Property Name="profile_image_url" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="Driver">
+          <Key>
+            <PropertyRef Name="driver_id" />
+          </Key>
+          <Property Name="driver_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="first_name" Type="nvarchar" MaxLength="100" />
+          <Property Name="last_name" Type="nvarchar" MaxLength="100" />
+          <Property Name="CNIC" Type="nvarchar" MaxLength="20" />
+          <Property Name="contact_no" Type="nvarchar" MaxLength="20" />
+          <Property Name="licence_no" Type="nvarchar" MaxLength="50" />
+          <Property Name="street_no" Type="nvarchar" MaxLength="50" />
+          <Property Name="city" Type="nvarchar" MaxLength="100" />
+          <Property Name="profile_image_url" Type="nvarchar" MaxLength="255" />
+          <Property Name="is_available" Type="bit" />
+        </EntityType>
+        <EntityType Name="DriverDocuments">
+          <Key>
+            <PropertyRef Name="document_id" />
+          </Key>
+          <Property Name="document_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="driver_id" Type="int" Nullable="false" />
+          <Property Name="uploaded_at" Type="datetime" />
+          <Property Name="cnic_link" Type="nvarchar" MaxLength="255" />
+          <Property Name="license_link" Type="nvarchar" MaxLength="255" />
+          <Property Name="front_link" Type="nvarchar" MaxLength="255" />
+          <Property Name="back_link" Type="nvarchar" MaxLength="255" />
+          <Property Name="photo_link" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="Notifications">
+          <Key>
+            <PropertyRef Name="notification_id" />
+          </Key>
+          <Property Name="notification_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="title" Type="nvarchar" MaxLength="100" />
+          <Property Name="message" Type="nvarchar" MaxLength="255" />
+          <Property Name="related_entity_type" Type="nvarchar" MaxLength="50" />
+          <Property Name="related_entity_id" Type="int" />
+          <Property Name="is_read" Type="bit" />
+          <Property Name="read_at" Type="datetime" />
+          <Property Name="created_at" Type="datetime" />
+        </EntityType>
+        <EntityType Name="PackageAttributeMapping">
+          <Key>
+            <PropertyRef Name="mapping_id" />
+          </Key>
+          <Property Name="mapping_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="package_id" Type="int" Nullable="false" />
+          <Property Name="attribute_id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PackageAttributes">
+          <Key>
+            <PropertyRef Name="attribute_id" />
+          </Key>
+          <Property Name="attribute_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="attribute_name" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="Packages">
+          <Key>
+            <PropertyRef Name="package_id" />
+          </Key>
+          <Property Name="package_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="shipment_id" Type="int" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="100" />
+          <Property Name="weight" Type="float" />
+          <Property Name="length" Type="float" />
+          <Property Name="width" Type="float" />
+          <Property Name="height" Type="float" />
+          <Property Name="quantity" Type="int" />
+          <Property Name="Mapping_id" Type="int" />
+          <Property Name="color" Type="nvarchar" MaxLength="50" />
+          <Property Name="tagNo" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="RecipientDetails">
+          <Key>
+            <PropertyRef Name="recipient_detail_id" />
+          </Key>
+          <Property Name="recipient_detail_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="shipment_id" Type="int" Nullable="false" />
+          <Property Name="recipient_fname" Type="nvarchar" MaxLength="100" />
+          <Property Name="recipient_lname" Type="nvarchar" MaxLength="100" />
+          <Property Name="recipient_contact" Type="nvarchar" MaxLength="20" />
+          <Property Name="instructionsMessage" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="Requests">
+          <Key>
+            <PropertyRef Name="request_id" />
+          </Key>
+          <Property Name="request_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="driver_id" Type="int" Nullable="false" />
+          <Property Name="status" Type="nvarchar" MaxLength="50" />
+          <Property Name="fare" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="route_id" Type="int" />
+          <Property Name="shipment_id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Reviews">
+          <Key>
+            <PropertyRef Name="review_id" />
+          </Key>
+          <Property Name="review_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="trip_id" Type="int" Nullable="false" />
+          <Property Name="reviewer_user_id" Type="int" Nullable="false" />
+          <Property Name="target_user_id" Type="int" Nullable="false" />
+          <Property Name="rating" Type="int" />
+          <Property Name="comments" Type="nvarchar" MaxLength="255" />
+          <Property Name="created_at" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="role_id" />
+          </Key>
+          <Property Name="role_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="role_name" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RoutePreferences">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="route_id" Type="int" Nullable="false" />
+          <Property Name="is_fragile" Type="bit" />
+          <Property Name="is_liquid" Type="bit" />
+          <Property Name="is_flammable" Type="bit" />
+          <Property Name="keep_upright" Type="bit" />
+          <Property Name="shipment_type" Type="varchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Routes">
+          <Key>
+            <PropertyRef Name="route_id" />
+          </Key>
+          <Property Name="route_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="driver_id" Type="int" Nullable="false" />
+          <Property Name="is_active" Type="bit" />
+          <Property Name="is_next_route" Type="bit" />
+          <Property Name="base_fare" Type="decimal" Precision="10" Scale="2" />
+        </EntityType>
+        <EntityType Name="RouteSchedule">
+          <Key>
+            <PropertyRef Name="routeScheduleId" />
+          </Key>
+          <Property Name="routeScheduleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="route_id" Type="int" Nullable="false" />
+          <Property Name="departureDate" Type="datetime" />
+          <Property Name="arrivalDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Shipments">
+          <Key>
+            <PropertyRef Name="shipment_id" />
+          </Key>
+          <Property Name="shipment_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sender_name" Type="nvarchar" MaxLength="100" />
+          <Property Name="sender_contact" Type="nvarchar" MaxLength="20" />
+          <Property Name="status" Type="nvarchar" MaxLength="50" />
+          <Property Name="customer_id" Type="int" Nullable="false" />
+          <Property Name="strict" Type="bit" />
+          <Property Name="package_count" Type="int" />
+          <Property Name="total_weight" Type="float" />
+          <Property Name="pickup_lat" Type="float" />
+          <Property Name="pickup_long" Type="float" />
+          <Property Name="pickup_address" Type="nvarchar" MaxLength="500" />
+          <Property Name="delivery_lat" Type="float" />
+          <Property Name="delivery_long" Type="float" />
+          <Property Name="delivery_address" Type="nvarchar" MaxLength="500" />
+          <Property Name="pickup_date" Type="datetime" />
+          <Property Name="shipment_radius" Type="float" />
+          <Property Name="shipment_type" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="TripCheckpoints">
+          <Key>
+            <PropertyRef Name="checkpoint_event_id" />
+          </Key>
+          <Property Name="checkpoint_event_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="trip_id" Type="int" Nullable="false" />
+          <Property Name="checkpoint_id" Type="int" Nullable="false" />
+          <Property Name="reached_at" Type="datetime" />
+          <Property Name="sequence_no" Type="int" />
+        </EntityType>
+        <EntityType Name="TripDelays">
+          <Key>
+            <PropertyRef Name="delay_id" />
+          </Key>
+          <Property Name="delay_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="trip_id" Type="int" Nullable="false" />
+          <Property Name="expected_delivery_date" Type="date" />
+          <Property Name="expected_delivery_time" Type="time" Precision="7" />
+          <Property Name="reason" Type="nvarchar" MaxLength="255" />
+          <Property Name="created_at" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Trips">
+          <Key>
+            <PropertyRef Name="trip_id" />
+          </Key>
+          <Property Name="trip_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="driver_id" Type="int" Nullable="false" />
+          <Property Name="vehicle_reg_no" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="route_id" Type="int" Nullable="false" />
+          <Property Name="start_time" Type="datetime" />
+          <Property Name="end_time" Type="datetime" />
+          <Property Name="status" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="TripStats">
+          <Key>
+            <PropertyRef Name="stat_id" />
+          </Key>
+          <Property Name="stat_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="trip_id" Type="int" Nullable="false" />
+          <Property Name="weight" Type="float" />
+          <Property Name="length" Type="float" />
+          <Property Name="width" Type="float" />
+          <Property Name="height" Type="float" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="user_id" />
+          </Key>
+          <Property Name="user_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="role_id" Type="int" Nullable="false" />
+          <Property Name="email" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="password" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="joindate" Type="datetime" />
+          <Property Name="suspended" Type="bit" />
+          <Property Name="is_active" Type="bit" />
+          <Property Name="last_login" Type="datetime" />
+          <Property Name="updated_at" Type="datetime" />
+        </EntityType>
+        <EntityType Name="UserSuspensions">
+          <Key>
+            <PropertyRef Name="suspension_id" />
+          </Key>
+          <Property Name="suspension_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="admin_id" Type="int" Nullable="false" />
+          <Property Name="reason" Type="nvarchar" MaxLength="255" />
+          <Property Name="created_at" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Vehicle">
+          <Key>
+            <PropertyRef Name="vehicle_reg_no" />
+          </Key>
+          <Property Name="vehicle_reg_no" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="model" Type="nvarchar" MaxLength="100" />
+          <Property Name="type" Type="nvarchar" MaxLength="50" />
+          <Property Name="weight_capacity" Type="float" />
+          <Property Name="length" Type="float" />
+          <Property Name="width" Type="float" />
+          <Property Name="height" Type="float" />
+          <Property Name="driver_id" Type="int" />
+        </EntityType>
+        <EntityType Name="VehicleDocuments">
+          <Key>
+            <PropertyRef Name="document_no" />
+          </Key>
+          <Property Name="document_no" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="vehicle_reg_no" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="cnic_link" Type="nvarchar" MaxLength="255" />
+          <Property Name="license_link" Type="nvarchar" MaxLength="255" />
+          <Property Name="photo_link" Type="nvarchar" MaxLength="255" />
+          <Property Name="front_link" Type="nvarchar" MaxLength="255" />
+          <Property Name="back_link" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <Association Name="FK__Admin__user_id__5535A963">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Admin" Type="Self.Admin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Admin">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Bookings__custom__208CD6FA">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="Bookings" Type="Self.Bookings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="customer_id" />
+            </Principal>
+            <Dependent Role="Bookings">
+              <PropertyRef Name="customer_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Bookings__route___2180FB33">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="Bookings" Type="Self.Bookings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="route_id" />
+            </Principal>
+            <Dependent Role="Bookings">
+              <PropertyRef Name="route_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Bookings__shipme__1F98B2C1">
+          <End Role="Shipments" Type="Self.Shipments" Multiplicity="1" />
+          <End Role="Bookings" Type="Self.Bookings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Shipments">
+              <PropertyRef Name="shipment_id" />
+            </Principal>
+            <Dependent Role="Bookings">
+              <PropertyRef Name="shipment_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Bookings__trip_i__22751F6C">
+          <End Role="Trips" Type="Self.Trips" Multiplicity="0..1" />
+          <End Role="Bookings" Type="Self.Bookings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Trips">
+              <PropertyRef Name="trip_id" />
+            </Principal>
+            <Dependent Role="Bookings">
+              <PropertyRef Name="trip_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ChatAttac__messa__40F9A68C">
+          <End Role="ChatMessages" Type="Self.ChatMessages" Multiplicity="1" />
+          <End Role="ChatAttachments" Type="Self.ChatAttachments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ChatMessages">
+              <PropertyRef Name="message_id" />
+            </Principal>
+            <Dependent Role="ChatAttachments">
+              <PropertyRef Name="message_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ChatMessa__sende__3D2915A8">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="ChatMessages" Type="Self.ChatMessages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="ChatMessages">
+              <PropertyRef Name="sender_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ChatMessa__threa__3C34F16F">
+          <End Role="ChatThreads" Type="Self.ChatThreads" Multiplicity="1" />
+          <End Role="ChatMessages" Type="Self.ChatMessages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ChatThreads">
+              <PropertyRef Name="thread_id" />
+            </Principal>
+            <Dependent Role="ChatMessages">
+              <PropertyRef Name="thread_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ChatThrea__assig__37703C52">
+          <End Role="Admin" Type="Self.Admin" Multiplicity="0..1" />
+          <End Role="ChatThreads" Type="Self.ChatThreads" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Admin">
+              <PropertyRef Name="admin_id" />
+            </Principal>
+            <Dependent Role="ChatThreads">
+              <PropertyRef Name="assigned_admin_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ChatThrea__creat__367C1819">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="ChatThreads" Type="Self.ChatThreads" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="ChatThreads">
+              <PropertyRef Name="created_by_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ChatThrea__shipm__3587F3E0">
+          <End Role="Shipments" Type="Self.Shipments" Multiplicity="0..1" />
+          <End Role="ChatThreads" Type="Self.ChatThreads" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Shipments">
+              <PropertyRef Name="shipment_id" />
+            </Principal>
+            <Dependent Role="ChatThreads">
+              <PropertyRef Name="shipment_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Customer__user_i__59063A47">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Customer" Type="Self.Customer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Customer">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Driver__user_id__5DCAEF64">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Driver" Type="Self.Driver" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Driver">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__DriverDoc__drive__66603565">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="1" />
+          <End Role="DriverDocuments" Type="Self.DriverDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="driver_id" />
+            </Principal>
+            <Dependent Role="DriverDocuments">
+              <PropertyRef Name="driver_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Notificat__user___45BE5BA9">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Notifications" Type="Self.Notifications" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Notifications">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PackageAt__attri__151B244E">
+          <End Role="PackageAttributes" Type="Self.PackageAttributes" Multiplicity="1" />
+          <End Role="PackageAttributeMapping" Type="Self.PackageAttributeMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PackageAttributes">
+              <PropertyRef Name="attribute_id" />
+            </Principal>
+            <Dependent Role="PackageAttributeMapping">
+              <PropertyRef Name="attribute_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PackageAt__packa__14270015">
+          <End Role="Packages" Type="Self.Packages" Multiplicity="1" />
+          <End Role="PackageAttributeMapping" Type="Self.PackageAttributeMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Packages">
+              <PropertyRef Name="package_id" />
+            </Principal>
+            <Dependent Role="PackageAttributeMapping">
+              <PropertyRef Name="package_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Packages__shipme__0F624AF8">
+          <End Role="Shipments" Type="Self.Shipments" Multiplicity="1" />
+          <End Role="Packages" Type="Self.Packages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Shipments">
+              <PropertyRef Name="shipment_id" />
+            </Principal>
+            <Dependent Role="Packages">
+              <PropertyRef Name="shipment_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Recipient__shipm__08B54D69">
+          <End Role="Shipments" Type="Self.Shipments" Multiplicity="1" />
+          <End Role="RecipientDetails" Type="Self.RecipientDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Shipments">
+              <PropertyRef Name="shipment_id" />
+            </Principal>
+            <Dependent Role="RecipientDetails">
+              <PropertyRef Name="shipment_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Requests__driver__0C85DE4D">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="1" />
+          <End Role="Requests" Type="Self.Requests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="driver_id" />
+            </Principal>
+            <Dependent Role="Requests">
+              <PropertyRef Name="driver_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Requests__shipme__73852659">
+          <End Role="Shipments" Type="Self.Shipments" Multiplicity="1" />
+          <End Role="Requests" Type="Self.Requests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Shipments">
+              <PropertyRef Name="shipment_id" />
+            </Principal>
+            <Dependent Role="Requests">
+              <PropertyRef Name="shipment_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Reviews__reviewe__31B762FC">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Reviews" Type="Self.Reviews" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Reviews">
+              <PropertyRef Name="reviewer_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Reviews__target___32AB8735">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Reviews" Type="Self.Reviews" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Reviews">
+              <PropertyRef Name="target_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Reviews__trip_id__30C33EC3">
+          <End Role="Trips" Type="Self.Trips" Multiplicity="1" />
+          <End Role="Reviews" Type="Self.Reviews" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Trips">
+              <PropertyRef Name="trip_id" />
+            </Principal>
+            <Dependent Role="Reviews">
+              <PropertyRef Name="trip_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Routes__driver_i__71D1E811">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="1" />
+          <End Role="Routes" Type="Self.Routes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="driver_id" />
+            </Principal>
+            <Dependent Role="Routes">
+              <PropertyRef Name="driver_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Shipments__custo__05D8E0BE">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="Shipments" Type="Self.Shipments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="customer_id" />
+            </Principal>
+            <Dependent Role="Shipments">
+              <PropertyRef Name="customer_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TripCheck__check__2645B050">
+          <End Role="Checkpoints" Type="Self.Checkpoints" Multiplicity="1" />
+          <End Role="TripCheckpoints" Type="Self.TripCheckpoints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Checkpoints">
+              <PropertyRef Name="checkpoint_id" />
+            </Principal>
+            <Dependent Role="TripCheckpoints">
+              <PropertyRef Name="checkpoint_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TripCheck__trip___25518C17">
+          <End Role="Trips" Type="Self.Trips" Multiplicity="1" />
+          <End Role="TripCheckpoints" Type="Self.TripCheckpoints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Trips">
+              <PropertyRef Name="trip_id" />
+            </Principal>
+            <Dependent Role="TripCheckpoints">
+              <PropertyRef Name="trip_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TripDelay__trip___2A164134">
+          <End Role="Trips" Type="Self.Trips" Multiplicity="1" />
+          <End Role="TripDelays" Type="Self.TripDelays" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Trips">
+              <PropertyRef Name="trip_id" />
+            </Principal>
+            <Dependent Role="TripDelays">
+              <PropertyRef Name="trip_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Trips__driver_id__18EBB532">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="1" />
+          <End Role="Trips" Type="Self.Trips" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="driver_id" />
+            </Principal>
+            <Dependent Role="Trips">
+              <PropertyRef Name="driver_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Trips__route_id__1AD3FDA4">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="Trips" Type="Self.Trips" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="route_id" />
+            </Principal>
+            <Dependent Role="Trips">
+              <PropertyRef Name="route_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Trips__vehicle_r__19DFD96B">
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="Trips" Type="Self.Trips" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicle">
+              <PropertyRef Name="vehicle_reg_no" />
+            </Principal>
+            <Dependent Role="Trips">
+              <PropertyRef Name="vehicle_reg_no" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TripStats__trip___2CF2ADDF">
+          <End Role="Trips" Type="Self.Trips" Multiplicity="1" />
+          <End Role="TripStats" Type="Self.TripStats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Trips">
+              <PropertyRef Name="trip_id" />
+            </Principal>
+            <Dependent Role="TripStats">
+              <PropertyRef Name="trip_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Users__role_id__5165187F">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="1" />
+          <End Role="Users" Type="Self.Users" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="role_id" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="role_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__UserSuspe__admin__628FA481">
+          <End Role="Admin" Type="Self.Admin" Multiplicity="1" />
+          <End Role="UserSuspensions" Type="Self.UserSuspensions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Admin">
+              <PropertyRef Name="admin_id" />
+            </Principal>
+            <Dependent Role="UserSuspensions">
+              <PropertyRef Name="admin_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__UserSuspe__user___619B8048">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="UserSuspensions" Type="Self.UserSuspensions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="UserSuspensions">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Vehicle__driver___693CA210">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="0..1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="driver_id" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="driver_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__VehicleDo__vehic__6C190EBB">
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="VehicleDocuments" Type="Self.VehicleDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicle">
+              <PropertyRef Name="vehicle_reg_no" />
+            </Principal>
+            <Dependent Role="VehicleDocuments">
+              <PropertyRef Name="vehicle_reg_no" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Checkpoints_Driver">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="0..1" />
+          <End Role="Checkpoints" Type="Self.Checkpoints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="driver_id" />
+            </Principal>
+            <Dependent Role="Checkpoints">
+              <PropertyRef Name="driver_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Checkpoints_Routes">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="Checkpoints" Type="Self.Checkpoints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="route_id" />
+            </Principal>
+            <Dependent Role="Checkpoints">
+              <PropertyRef Name="route_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RoutePreferences_Route">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="RoutePreferences" Type="Self.RoutePreferences" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="route_id" />
+            </Principal>
+            <Dependent Role="RoutePreferences">
+              <PropertyRef Name="route_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RouteSchedule_Routes">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="RouteSchedule" Type="Self.RouteSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="route_id" />
+            </Principal>
+            <Dependent Role="RouteSchedule">
+              <PropertyRef Name="route_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CargoConnectModelStoreContainer">
+          <EntitySet Name="Admin" EntityType="Self.Admin" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Bookings" EntityType="Self.Bookings" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ChatAttachments" EntityType="Self.ChatAttachments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ChatMessages" EntityType="Self.ChatMessages" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ChatThreads" EntityType="Self.ChatThreads" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Checkpoints" EntityType="Self.Checkpoints" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Customer" EntityType="Self.Customer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Driver" EntityType="Self.Driver" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DriverDocuments" EntityType="Self.DriverDocuments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Notifications" EntityType="Self.Notifications" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PackageAttributeMapping" EntityType="Self.PackageAttributeMapping" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PackageAttributes" EntityType="Self.PackageAttributes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Packages" EntityType="Self.Packages" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RecipientDetails" EntityType="Self.RecipientDetails" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Requests" EntityType="Self.Requests" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Reviews" EntityType="Self.Reviews" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RoutePreferences" EntityType="Self.RoutePreferences" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Routes" EntityType="Self.Routes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RouteSchedule" EntityType="Self.RouteSchedule" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Shipments" EntityType="Self.Shipments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TripCheckpoints" EntityType="Self.TripCheckpoints" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TripDelays" EntityType="Self.TripDelays" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Trips" EntityType="Self.Trips" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TripStats" EntityType="Self.TripStats" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserSuspensions" EntityType="Self.UserSuspensions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Vehicle" EntityType="Self.Vehicle" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="VehicleDocuments" EntityType="Self.VehicleDocuments" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Admin__user_id__5535A963" Association="Self.FK__Admin__user_id__5535A963">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Admin" EntitySet="Admin" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Bookings__custom__208CD6FA" Association="Self.FK__Bookings__custom__208CD6FA">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="Bookings" EntitySet="Bookings" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Bookings__route___2180FB33" Association="Self.FK__Bookings__route___2180FB33">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Bookings" EntitySet="Bookings" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Bookings__shipme__1F98B2C1" Association="Self.FK__Bookings__shipme__1F98B2C1">
+            <End Role="Shipments" EntitySet="Shipments" />
+            <End Role="Bookings" EntitySet="Bookings" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Bookings__trip_i__22751F6C" Association="Self.FK__Bookings__trip_i__22751F6C">
+            <End Role="Trips" EntitySet="Trips" />
+            <End Role="Bookings" EntitySet="Bookings" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ChatAttac__messa__40F9A68C" Association="Self.FK__ChatAttac__messa__40F9A68C">
+            <End Role="ChatMessages" EntitySet="ChatMessages" />
+            <End Role="ChatAttachments" EntitySet="ChatAttachments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ChatMessa__sende__3D2915A8" Association="Self.FK__ChatMessa__sende__3D2915A8">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="ChatMessages" EntitySet="ChatMessages" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ChatMessa__threa__3C34F16F" Association="Self.FK__ChatMessa__threa__3C34F16F">
+            <End Role="ChatThreads" EntitySet="ChatThreads" />
+            <End Role="ChatMessages" EntitySet="ChatMessages" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ChatThrea__assig__37703C52" Association="Self.FK__ChatThrea__assig__37703C52">
+            <End Role="Admin" EntitySet="Admin" />
+            <End Role="ChatThreads" EntitySet="ChatThreads" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ChatThrea__creat__367C1819" Association="Self.FK__ChatThrea__creat__367C1819">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="ChatThreads" EntitySet="ChatThreads" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ChatThrea__shipm__3587F3E0" Association="Self.FK__ChatThrea__shipm__3587F3E0">
+            <End Role="Shipments" EntitySet="Shipments" />
+            <End Role="ChatThreads" EntitySet="ChatThreads" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Customer__user_i__59063A47" Association="Self.FK__Customer__user_i__59063A47">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Customer" EntitySet="Customer" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Driver__user_id__5DCAEF64" Association="Self.FK__Driver__user_id__5DCAEF64">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Driver" EntitySet="Driver" />
+          </AssociationSet>
+          <AssociationSet Name="FK__DriverDoc__drive__66603565" Association="Self.FK__DriverDoc__drive__66603565">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="DriverDocuments" EntitySet="DriverDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Notificat__user___45BE5BA9" Association="Self.FK__Notificat__user___45BE5BA9">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Notifications" EntitySet="Notifications" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PackageAt__attri__151B244E" Association="Self.FK__PackageAt__attri__151B244E">
+            <End Role="PackageAttributes" EntitySet="PackageAttributes" />
+            <End Role="PackageAttributeMapping" EntitySet="PackageAttributeMapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PackageAt__packa__14270015" Association="Self.FK__PackageAt__packa__14270015">
+            <End Role="Packages" EntitySet="Packages" />
+            <End Role="PackageAttributeMapping" EntitySet="PackageAttributeMapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Packages__shipme__0F624AF8" Association="Self.FK__Packages__shipme__0F624AF8">
+            <End Role="Shipments" EntitySet="Shipments" />
+            <End Role="Packages" EntitySet="Packages" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Recipient__shipm__08B54D69" Association="Self.FK__Recipient__shipm__08B54D69">
+            <End Role="Shipments" EntitySet="Shipments" />
+            <End Role="RecipientDetails" EntitySet="RecipientDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Requests__driver__0C85DE4D" Association="Self.FK__Requests__driver__0C85DE4D">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="Requests" EntitySet="Requests" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Requests__shipme__73852659" Association="Self.FK__Requests__shipme__73852659">
+            <End Role="Shipments" EntitySet="Shipments" />
+            <End Role="Requests" EntitySet="Requests" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Reviews__reviewe__31B762FC" Association="Self.FK__Reviews__reviewe__31B762FC">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Reviews" EntitySet="Reviews" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Reviews__target___32AB8735" Association="Self.FK__Reviews__target___32AB8735">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Reviews" EntitySet="Reviews" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Reviews__trip_id__30C33EC3" Association="Self.FK__Reviews__trip_id__30C33EC3">
+            <End Role="Trips" EntitySet="Trips" />
+            <End Role="Reviews" EntitySet="Reviews" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Routes__driver_i__71D1E811" Association="Self.FK__Routes__driver_i__71D1E811">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="Routes" EntitySet="Routes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Shipments__custo__05D8E0BE" Association="Self.FK__Shipments__custo__05D8E0BE">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="Shipments" EntitySet="Shipments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TripCheck__check__2645B050" Association="Self.FK__TripCheck__check__2645B050">
+            <End Role="Checkpoints" EntitySet="Checkpoints" />
+            <End Role="TripCheckpoints" EntitySet="TripCheckpoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TripCheck__trip___25518C17" Association="Self.FK__TripCheck__trip___25518C17">
+            <End Role="Trips" EntitySet="Trips" />
+            <End Role="TripCheckpoints" EntitySet="TripCheckpoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TripDelay__trip___2A164134" Association="Self.FK__TripDelay__trip___2A164134">
+            <End Role="Trips" EntitySet="Trips" />
+            <End Role="TripDelays" EntitySet="TripDelays" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Trips__driver_id__18EBB532" Association="Self.FK__Trips__driver_id__18EBB532">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="Trips" EntitySet="Trips" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Trips__route_id__1AD3FDA4" Association="Self.FK__Trips__route_id__1AD3FDA4">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Trips" EntitySet="Trips" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Trips__vehicle_r__19DFD96B" Association="Self.FK__Trips__vehicle_r__19DFD96B">
+            <End Role="Vehicle" EntitySet="Vehicle" />
+            <End Role="Trips" EntitySet="Trips" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TripStats__trip___2CF2ADDF" Association="Self.FK__TripStats__trip___2CF2ADDF">
+            <End Role="Trips" EntitySet="Trips" />
+            <End Role="TripStats" EntitySet="TripStats" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Users__role_id__5165187F" Association="Self.FK__Users__role_id__5165187F">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK__UserSuspe__admin__628FA481" Association="Self.FK__UserSuspe__admin__628FA481">
+            <End Role="Admin" EntitySet="Admin" />
+            <End Role="UserSuspensions" EntitySet="UserSuspensions" />
+          </AssociationSet>
+          <AssociationSet Name="FK__UserSuspe__user___619B8048" Association="Self.FK__UserSuspe__user___619B8048">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserSuspensions" EntitySet="UserSuspensions" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Vehicle__driver___693CA210" Association="Self.FK__Vehicle__driver___693CA210">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="Vehicle" EntitySet="Vehicle" />
+          </AssociationSet>
+          <AssociationSet Name="FK__VehicleDo__vehic__6C190EBB" Association="Self.FK__VehicleDo__vehic__6C190EBB">
+            <End Role="Vehicle" EntitySet="Vehicle" />
+            <End Role="VehicleDocuments" EntitySet="VehicleDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Checkpoints_Driver" Association="Self.FK_Checkpoints_Driver">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="Checkpoints" EntitySet="Checkpoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Checkpoints_Routes" Association="Self.FK_Checkpoints_Routes">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Checkpoints" EntitySet="Checkpoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RoutePreferences_Route" Association="Self.FK_RoutePreferences_Route">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="RoutePreferences" EntitySet="RoutePreferences" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RouteSchedule_Routes" Association="Self.FK_RouteSchedule_Routes">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="RouteSchedule" EntitySet="RouteSchedule" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="CargoConnectModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Admin">
+          <Key>
+            <PropertyRef Name="admin_id" />
+          </Key>
+          <Property Name="admin_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="user_id" Type="Int32" Nullable="false" />
+          <Property Name="first_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="last_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CNIC" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="contact_no" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="street_no" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="city" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Admin__user_id__5535A963" FromRole="Admin" ToRole="Users" />
+          <NavigationProperty Name="ChatThreads" Relationship="Self.FK__ChatThrea__assig__37703C52" FromRole="Admin" ToRole="ChatThreads" />
+          <NavigationProperty Name="UserSuspensions" Relationship="Self.FK__UserSuspe__admin__628FA481" FromRole="Admin" ToRole="UserSuspensions" />
+        </EntityType>
+        <EntityType Name="Bookings">
+          <Key>
+            <PropertyRef Name="booking_id" />
+          </Key>
+          <Property Name="booking_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="shipment_id" Type="Int32" Nullable="false" />
+          <Property Name="customer_id" Type="Int32" Nullable="false" />
+          <Property Name="route_id" Type="Int32" Nullable="false" />
+          <Property Name="trip_id" Type="Int32" />
+          <Property Name="status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="amount" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="cancel_reason" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="created_at" Type="DateTime" Precision="3" />
+          <Property Name="updated_at" Type="DateTime" Precision="3" />
+          <Property Name="booking_type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="pickup_date" Type="DateTime" Precision="3" />
+          <Property Name="delivery_date" Type="DateTime" Precision="3" />
+          <Property Name="estimated_delivery_datetime" Type="DateTime" Precision="3" />
+          <Property Name="actual_delivery_datetime" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Customer" Relationship="Self.FK__Bookings__custom__208CD6FA" FromRole="Bookings" ToRole="Customer" />
+          <NavigationProperty Name="Routes" Relationship="Self.FK__Bookings__route___2180FB33" FromRole="Bookings" ToRole="Routes" />
+          <NavigationProperty Name="Shipments" Relationship="Self.FK__Bookings__shipme__1F98B2C1" FromRole="Bookings" ToRole="Shipments" />
+          <NavigationProperty Name="Trips" Relationship="Self.FK__Bookings__trip_i__22751F6C" FromRole="Bookings" ToRole="Trips" />
+        </EntityType>
+        <EntityType Name="ChatAttachments">
+          <Key>
+            <PropertyRef Name="attachment_id" />
+          </Key>
+          <Property Name="attachment_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="message_id" Type="Int32" Nullable="false" />
+          <Property Name="file_url" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="file_type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="uploaded_at" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="ChatMessages" Relationship="Self.FK__ChatAttac__messa__40F9A68C" FromRole="ChatAttachments" ToRole="ChatMessages" />
+        </EntityType>
+        <EntityType Name="ChatMessages">
+          <Key>
+            <PropertyRef Name="message_id" />
+          </Key>
+          <Property Name="message_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="thread_id" Type="Int32" Nullable="false" />
+          <Property Name="sender_user_id" Type="Int32" Nullable="false" />
+          <Property Name="message_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="is_read" Type="Boolean" />
+          <Property Name="sent_at" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="ChatAttachments" Relationship="Self.FK__ChatAttac__messa__40F9A68C" FromRole="ChatMessages" ToRole="ChatAttachments" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__ChatMessa__sende__3D2915A8" FromRole="ChatMessages" ToRole="Users" />
+          <NavigationProperty Name="ChatThreads" Relationship="Self.FK__ChatMessa__threa__3C34F16F" FromRole="ChatMessages" ToRole="ChatThreads" />
+        </EntityType>
+        <EntityType Name="ChatThreads">
+          <Key>
+            <PropertyRef Name="thread_id" />
+          </Key>
+          <Property Name="thread_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="thread_type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="shipment_id" Type="Int32" />
+          <Property Name="created_by_user_id" Type="Int32" Nullable="false" />
+          <Property Name="assigned_admin_id" Type="Int32" />
+          <Property Name="status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Admin" Relationship="Self.FK__ChatThrea__assig__37703C52" FromRole="ChatThreads" ToRole="Admin" />
+          <NavigationProperty Name="ChatMessages" Relationship="Self.FK__ChatMessa__threa__3C34F16F" FromRole="ChatThreads" ToRole="ChatMessages" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__ChatThrea__creat__367C1819" FromRole="ChatThreads" ToRole="Users" />
+          <NavigationProperty Name="Shipments" Relationship="Self.FK__ChatThrea__shipm__3587F3E0" FromRole="ChatThreads" ToRole="Shipments" />
+        </EntityType>
+        <EntityType Name="Checkpoints">
+          <Key>
+            <PropertyRef Name="checkpoint_id" />
+          </Key>
+          <Property Name="checkpoint_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="latitude" Type="Double" />
+          <Property Name="longitude" Type="Double" />
+          <Property Name="driver_id" Type="Int32" />
+          <Property Name="route_id" Type="Int32" Nullable="false" />
+          <Property Name="sequence_no" Type="Int32" Nullable="false" />
+          <Property Name="reached" Type="Boolean" />
+          <NavigationProperty Name="TripCheckpoints" Relationship="Self.FK__TripCheck__check__2645B050" FromRole="Checkpoints" ToRole="TripCheckpoints" />
+          <NavigationProperty Name="Driver" Relationship="Self.FK_Checkpoints_Driver" FromRole="Checkpoints" ToRole="Driver" />
+          <NavigationProperty Name="Routes" Relationship="Self.FK_Checkpoints_Routes" FromRole="Checkpoints" ToRole="Routes" />
+        </EntityType>
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="customer_id" />
+          </Key>
+          <Property Name="customer_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="user_id" Type="Int32" Nullable="false" />
+          <Property Name="first_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="last_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CNIC" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="contact_no" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="street_no" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="city" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="profile_image_url" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Bookings" Relationship="Self.FK__Bookings__custom__208CD6FA" FromRole="Customer" ToRole="Bookings" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Customer__user_i__59063A47" FromRole="Customer" ToRole="Users" />
+          <NavigationProperty Name="Shipments" Relationship="Self.FK__Shipments__custo__05D8E0BE" FromRole="Customer" ToRole="Shipments" />
+        </EntityType>
+        <EntityType Name="Driver">
+          <Key>
+            <PropertyRef Name="driver_id" />
+          </Key>
+          <Property Name="driver_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="user_id" Type="Int32" Nullable="false" />
+          <Property Name="first_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="last_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CNIC" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="contact_no" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="licence_no" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="street_no" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="city" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="profile_image_url" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="is_available" Type="Boolean" />
+          <NavigationProperty Name="Checkpoints" Relationship="Self.FK_Checkpoints_Driver" FromRole="Driver" ToRole="Checkpoints" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Driver__user_id__5DCAEF64" FromRole="Driver" ToRole="Users" />
+          <NavigationProperty Name="DriverDocuments" Relationship="Self.FK__DriverDoc__drive__66603565" FromRole="Driver" ToRole="DriverDocuments" />
+          <NavigationProperty Name="Requests" Relationship="Self.FK__Requests__driver__0C85DE4D" FromRole="Driver" ToRole="Requests" />
+          <NavigationProperty Name="Routes" Relationship="Self.FK__Routes__driver_i__71D1E811" FromRole="Driver" ToRole="Routes" />
+          <NavigationProperty Name="Trips" Relationship="Self.FK__Trips__driver_id__18EBB532" FromRole="Driver" ToRole="Trips" />
+          <NavigationProperty Name="Vehicle" Relationship="Self.FK__Vehicle__driver___693CA210" FromRole="Driver" ToRole="Vehicle" />
+        </EntityType>
+        <EntityType Name="DriverDocuments">
+          <Key>
+            <PropertyRef Name="document_id" />
+          </Key>
+          <Property Name="document_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="driver_id" Type="Int32" Nullable="false" />
+          <Property Name="uploaded_at" Type="DateTime" Precision="3" />
+          <Property Name="cnic_link" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="license_link" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="front_link" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="back_link" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="photo_link" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Driver" Relationship="Self.FK__DriverDoc__drive__66603565" FromRole="DriverDocuments" ToRole="Driver" />
+        </EntityType>
+        <EntityType Name="Notifications">
+          <Key>
+            <PropertyRef Name="notification_id" />
+          </Key>
+          <Property Name="notification_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="user_id" Type="Int32" Nullable="false" />
+          <Property Name="title" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="message" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="related_entity_type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="related_entity_id" Type="Int32" />
+          <Property Name="is_read" Type="Boolean" />
+          <Property Name="read_at" Type="DateTime" Precision="3" />
+          <Property Name="created_at" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Notificat__user___45BE5BA9" FromRole="Notifications" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="PackageAttributeMapping">
+          <Key>
+            <PropertyRef Name="mapping_id" />
+          </Key>
+          <Property Name="mapping_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="package_id" Type="Int32" Nullable="false" />
+          <Property Name="attribute_id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="PackageAttributes" Relationship="Self.FK__PackageAt__attri__151B244E" FromRole="PackageAttributeMapping" ToRole="PackageAttributes" />
+          <NavigationProperty Name="Packages" Relationship="Self.FK__PackageAt__packa__14270015" FromRole="PackageAttributeMapping" ToRole="Packages" />
+        </EntityType>
+        <EntityType Name="PackageAttributes">
+          <Key>
+            <PropertyRef Name="attribute_id" />
+          </Key>
+          <Property Name="attribute_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="attribute_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="PackageAttributeMapping" Relationship="Self.FK__PackageAt__attri__151B244E" FromRole="PackageAttributes" ToRole="PackageAttributeMapping" />
+        </EntityType>
+        <EntityType Name="Packages">
+          <Key>
+            <PropertyRef Name="package_id" />
+          </Key>
+          <Property Name="package_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="shipment_id" Type="Int32" Nullable="false" />
+          <Property Name="name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="weight" Type="Double" />
+          <Property Name="length" Type="Double" />
+          <Property Name="width" Type="Double" />
+          <Property Name="height" Type="Double" />
+          <Property Name="quantity" Type="Int32" />
+          <Property Name="Mapping_id" Type="Int32" />
+          <Property Name="color" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="tagNo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="PackageAttributeMapping" Relationship="Self.FK__PackageAt__packa__14270015" FromRole="Packages" ToRole="PackageAttributeMapping" />
+          <NavigationProperty Name="Shipments" Relationship="Self.FK__Packages__shipme__0F624AF8" FromRole="Packages" ToRole="Shipments" />
+        </EntityType>
+        <EntityType Name="RecipientDetails">
+          <Key>
+            <PropertyRef Name="recipient_detail_id" />
+          </Key>
+          <Property Name="recipient_detail_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="shipment_id" Type="Int32" Nullable="false" />
+          <Property Name="recipient_fname" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="recipient_lname" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="recipient_contact" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="instructionsMessage" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Shipments" Relationship="Self.FK__Recipient__shipm__08B54D69" FromRole="RecipientDetails" ToRole="Shipments" />
+        </EntityType>
+        <EntityType Name="Requests">
+          <Key>
+            <PropertyRef Name="request_id" />
+          </Key>
+          <Property Name="request_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="driver_id" Type="Int32" Nullable="false" />
+          <Property Name="status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="fare" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="route_id" Type="Int32" />
+          <Property Name="shipment_id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Driver" Relationship="Self.FK__Requests__driver__0C85DE4D" FromRole="Requests" ToRole="Driver" />
+          <NavigationProperty Name="Shipments" Relationship="Self.FK__Requests__shipme__73852659" FromRole="Requests" ToRole="Shipments" />
+        </EntityType>
+        <EntityType Name="Reviews">
+          <Key>
+            <PropertyRef Name="review_id" />
+          </Key>
+          <Property Name="review_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="trip_id" Type="Int32" Nullable="false" />
+          <Property Name="reviewer_user_id" Type="Int32" Nullable="false" />
+          <Property Name="target_user_id" Type="Int32" Nullable="false" />
+          <Property Name="rating" Type="Int32" />
+          <Property Name="comments" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="created_at" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Reviews__reviewe__31B762FC" FromRole="Reviews" ToRole="Users" />
+          <NavigationProperty Name="Users1" Relationship="Self.FK__Reviews__target___32AB8735" FromRole="Reviews" ToRole="Users" />
+          <NavigationProperty Name="Trips" Relationship="Self.FK__Reviews__trip_id__30C33EC3" FromRole="Reviews" ToRole="Trips" />
+        </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="role_id" />
+          </Key>
+          <Property Name="role_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="role_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Users__role_id__5165187F" FromRole="Roles" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="RoutePreferences">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="route_id" Type="Int32" Nullable="false" />
+          <Property Name="is_fragile" Type="Boolean" />
+          <Property Name="is_liquid" Type="Boolean" />
+          <Property Name="is_flammable" Type="Boolean" />
+          <Property Name="keep_upright" Type="Boolean" />
+          <Property Name="shipment_type" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Routes" Relationship="Self.FK_RoutePreferences_Route" FromRole="RoutePreferences" ToRole="Routes" />
+        </EntityType>
+        <EntityType Name="Routes">
+          <Key>
+            <PropertyRef Name="route_id" />
+          </Key>
+          <Property Name="route_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="driver_id" Type="Int32" Nullable="false" />
+          <Property Name="is_active" Type="Boolean" />
+          <Property Name="is_next_route" Type="Boolean" />
+          <Property Name="base_fare" Type="Decimal" Precision="10" Scale="2" />
+          <NavigationProperty Name="Bookings" Relationship="Self.FK__Bookings__route___2180FB33" FromRole="Routes" ToRole="Bookings" />
+          <NavigationProperty Name="Checkpoints" Relationship="Self.FK_Checkpoints_Routes" FromRole="Routes" ToRole="Checkpoints" />
+          <NavigationProperty Name="Driver" Relationship="Self.FK__Routes__driver_i__71D1E811" FromRole="Routes" ToRole="Driver" />
+          <NavigationProperty Name="RoutePreferences" Relationship="Self.FK_RoutePreferences_Route" FromRole="Routes" ToRole="RoutePreferences" />
+          <NavigationProperty Name="Trips" Relationship="Self.FK__Trips__route_id__1AD3FDA4" FromRole="Routes" ToRole="Trips" />
+          <NavigationProperty Name="RouteSchedule" Relationship="Self.FK_RouteSchedule_Routes" FromRole="Routes" ToRole="RouteSchedule" />
+        </EntityType>
+        <EntityType Name="RouteSchedule">
+          <Key>
+            <PropertyRef Name="routeScheduleId" />
+          </Key>
+          <Property Name="routeScheduleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="route_id" Type="Int32" Nullable="false" />
+          <Property Name="departureDate" Type="DateTime" Precision="3" />
+          <Property Name="arrivalDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Routes" Relationship="Self.FK_RouteSchedule_Routes" FromRole="RouteSchedule" ToRole="Routes" />
+        </EntityType>
+        <EntityType Name="Shipments">
+          <Key>
+            <PropertyRef Name="shipment_id" />
+          </Key>
+          <Property Name="shipment_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="sender_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="sender_contact" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="customer_id" Type="Int32" Nullable="false" />
+          <Property Name="strict" Type="Boolean" />
+          <Property Name="package_count" Type="Int32" />
+          <Property Name="total_weight" Type="Double" />
+          <Property Name="pickup_lat" Type="Double" />
+          <Property Name="pickup_long" Type="Double" />
+          <Property Name="pickup_address" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="delivery_lat" Type="Double" />
+          <Property Name="delivery_long" Type="Double" />
+          <Property Name="delivery_address" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="pickup_date" Type="DateTime" Precision="3" />
+          <Property Name="shipment_radius" Type="Double" />
+          <Property Name="shipment_type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Bookings" Relationship="Self.FK__Bookings__shipme__1F98B2C1" FromRole="Shipments" ToRole="Bookings" />
+          <NavigationProperty Name="ChatThreads" Relationship="Self.FK__ChatThrea__shipm__3587F3E0" FromRole="Shipments" ToRole="ChatThreads" />
+          <NavigationProperty Name="Customer" Relationship="Self.FK__Shipments__custo__05D8E0BE" FromRole="Shipments" ToRole="Customer" />
+          <NavigationProperty Name="Packages" Relationship="Self.FK__Packages__shipme__0F624AF8" FromRole="Shipments" ToRole="Packages" />
+          <NavigationProperty Name="RecipientDetails" Relationship="Self.FK__Recipient__shipm__08B54D69" FromRole="Shipments" ToRole="RecipientDetails" />
+          <NavigationProperty Name="Requests" Relationship="Self.FK__Requests__shipme__73852659" FromRole="Shipments" ToRole="Requests" />
+        </EntityType>
+        <EntityType Name="TripCheckpoints">
+          <Key>
+            <PropertyRef Name="checkpoint_event_id" />
+          </Key>
+          <Property Name="checkpoint_event_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="trip_id" Type="Int32" Nullable="false" />
+          <Property Name="checkpoint_id" Type="Int32" Nullable="false" />
+          <Property Name="reached_at" Type="DateTime" Precision="3" />
+          <Property Name="sequence_no" Type="Int32" />
+          <NavigationProperty Name="Checkpoints" Relationship="Self.FK__TripCheck__check__2645B050" FromRole="TripCheckpoints" ToRole="Checkpoints" />
+          <NavigationProperty Name="Trips" Relationship="Self.FK__TripCheck__trip___25518C17" FromRole="TripCheckpoints" ToRole="Trips" />
+        </EntityType>
+        <EntityType Name="TripDelays">
+          <Key>
+            <PropertyRef Name="delay_id" />
+          </Key>
+          <Property Name="delay_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="trip_id" Type="Int32" Nullable="false" />
+          <Property Name="expected_delivery_date" Type="DateTime" Precision="0" />
+          <Property Name="expected_delivery_time" Type="Time" Precision="7" />
+          <Property Name="reason" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="created_at" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Trips" Relationship="Self.FK__TripDelay__trip___2A164134" FromRole="TripDelays" ToRole="Trips" />
+        </EntityType>
+        <EntityType Name="Trips">
+          <Key>
+            <PropertyRef Name="trip_id" />
+          </Key>
+          <Property Name="trip_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="driver_id" Type="Int32" Nullable="false" />
+          <Property Name="vehicle_reg_no" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="route_id" Type="Int32" Nullable="false" />
+          <Property Name="start_time" Type="DateTime" Precision="3" />
+          <Property Name="end_time" Type="DateTime" Precision="3" />
+          <Property Name="status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Bookings" Relationship="Self.FK__Bookings__trip_i__22751F6C" FromRole="Trips" ToRole="Bookings" />
+          <NavigationProperty Name="Driver" Relationship="Self.FK__Trips__driver_id__18EBB532" FromRole="Trips" ToRole="Driver" />
+          <NavigationProperty Name="Reviews" Relationship="Self.FK__Reviews__trip_id__30C33EC3" FromRole="Trips" ToRole="Reviews" />
+          <NavigationProperty Name="Routes" Relationship="Self.FK__Trips__route_id__1AD3FDA4" FromRole="Trips" ToRole="Routes" />
+          <NavigationProperty Name="TripCheckpoints" Relationship="Self.FK__TripCheck__trip___25518C17" FromRole="Trips" ToRole="TripCheckpoints" />
+          <NavigationProperty Name="TripDelays" Relationship="Self.FK__TripDelay__trip___2A164134" FromRole="Trips" ToRole="TripDelays" />
+          <NavigationProperty Name="Vehicle" Relationship="Self.FK__Trips__vehicle_r__19DFD96B" FromRole="Trips" ToRole="Vehicle" />
+          <NavigationProperty Name="TripStats" Relationship="Self.FK__TripStats__trip___2CF2ADDF" FromRole="Trips" ToRole="TripStats" />
+        </EntityType>
+        <EntityType Name="TripStats">
+          <Key>
+            <PropertyRef Name="stat_id" />
+          </Key>
+          <Property Name="stat_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="trip_id" Type="Int32" Nullable="false" />
+          <Property Name="weight" Type="Double" />
+          <Property Name="length" Type="Double" />
+          <Property Name="width" Type="Double" />
+          <Property Name="height" Type="Double" />
+          <NavigationProperty Name="Trips" Relationship="Self.FK__TripStats__trip___2CF2ADDF" FromRole="TripStats" ToRole="Trips" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="user_id" />
+          </Key>
+          <Property Name="user_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="role_id" Type="Int32" Nullable="false" />
+          <Property Name="email" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="password" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="joindate" Type="DateTime" Precision="3" />
+          <Property Name="suspended" Type="Boolean" />
+          <Property Name="is_active" Type="Boolean" />
+          <Property Name="last_login" Type="DateTime" Precision="3" />
+          <Property Name="updated_at" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Admin" Relationship="Self.FK__Admin__user_id__5535A963" FromRole="Users" ToRole="Admin" />
+          <NavigationProperty Name="ChatMessages" Relationship="Self.FK__ChatMessa__sende__3D2915A8" FromRole="Users" ToRole="ChatMessages" />
+          <NavigationProperty Name="ChatThreads" Relationship="Self.FK__ChatThrea__creat__367C1819" FromRole="Users" ToRole="ChatThreads" />
+          <NavigationProperty Name="Customer" Relationship="Self.FK__Customer__user_i__59063A47" FromRole="Users" ToRole="Customer" />
+          <NavigationProperty Name="Driver" Relationship="Self.FK__Driver__user_id__5DCAEF64" FromRole="Users" ToRole="Driver" />
+          <NavigationProperty Name="Notifications" Relationship="Self.FK__Notificat__user___45BE5BA9" FromRole="Users" ToRole="Notifications" />
+          <NavigationProperty Name="Reviews" Relationship="Self.FK__Reviews__reviewe__31B762FC" FromRole="Users" ToRole="Reviews" />
+          <NavigationProperty Name="Reviews1" Relationship="Self.FK__Reviews__target___32AB8735" FromRole="Users" ToRole="Reviews" />
+          <NavigationProperty Name="Roles" Relationship="Self.FK__Users__role_id__5165187F" FromRole="Users" ToRole="Roles" />
+          <NavigationProperty Name="UserSuspensions" Relationship="Self.FK__UserSuspe__user___619B8048" FromRole="Users" ToRole="UserSuspensions" />
+        </EntityType>
+        <EntityType Name="UserSuspensions">
+          <Key>
+            <PropertyRef Name="suspension_id" />
+          </Key>
+          <Property Name="suspension_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="user_id" Type="Int32" Nullable="false" />
+          <Property Name="admin_id" Type="Int32" Nullable="false" />
+          <Property Name="reason" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="created_at" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Admin" Relationship="Self.FK__UserSuspe__admin__628FA481" FromRole="UserSuspensions" ToRole="Admin" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__UserSuspe__user___619B8048" FromRole="UserSuspensions" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Vehicle">
+          <Key>
+            <PropertyRef Name="vehicle_reg_no" />
+          </Key>
+          <Property Name="vehicle_reg_no" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="model" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="weight_capacity" Type="Double" />
+          <Property Name="length" Type="Double" />
+          <Property Name="width" Type="Double" />
+          <Property Name="height" Type="Double" />
+          <Property Name="driver_id" Type="Int32" />
+          <NavigationProperty Name="Driver" Relationship="Self.FK__Vehicle__driver___693CA210" FromRole="Vehicle" ToRole="Driver" />
+          <NavigationProperty Name="Trips" Relationship="Self.FK__Trips__vehicle_r__19DFD96B" FromRole="Vehicle" ToRole="Trips" />
+          <NavigationProperty Name="VehicleDocuments" Relationship="Self.FK__VehicleDo__vehic__6C190EBB" FromRole="Vehicle" ToRole="VehicleDocuments" />
+        </EntityType>
+        <EntityType Name="VehicleDocuments">
+          <Key>
+            <PropertyRef Name="document_no" />
+          </Key>
+          <Property Name="document_no" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="vehicle_reg_no" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="cnic_link" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="license_link" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="photo_link" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="front_link" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="back_link" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Vehicle" Relationship="Self.FK__VehicleDo__vehic__6C190EBB" FromRole="VehicleDocuments" ToRole="Vehicle" />
+        </EntityType>
+        <Association Name="FK__Admin__user_id__5535A963">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Admin" Type="Self.Admin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Admin">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ChatThrea__assig__37703C52">
+          <End Role="Admin" Type="Self.Admin" Multiplicity="0..1" />
+          <End Role="ChatThreads" Type="Self.ChatThreads" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Admin">
+              <PropertyRef Name="admin_id" />
+            </Principal>
+            <Dependent Role="ChatThreads">
+              <PropertyRef Name="assigned_admin_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__UserSuspe__admin__628FA481">
+          <End Role="Admin" Type="Self.Admin" Multiplicity="1" />
+          <End Role="UserSuspensions" Type="Self.UserSuspensions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Admin">
+              <PropertyRef Name="admin_id" />
+            </Principal>
+            <Dependent Role="UserSuspensions">
+              <PropertyRef Name="admin_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Bookings__custom__208CD6FA">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="Bookings" Type="Self.Bookings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="customer_id" />
+            </Principal>
+            <Dependent Role="Bookings">
+              <PropertyRef Name="customer_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Bookings__route___2180FB33">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="Bookings" Type="Self.Bookings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="route_id" />
+            </Principal>
+            <Dependent Role="Bookings">
+              <PropertyRef Name="route_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Bookings__shipme__1F98B2C1">
+          <End Role="Shipments" Type="Self.Shipments" Multiplicity="1" />
+          <End Role="Bookings" Type="Self.Bookings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Shipments">
+              <PropertyRef Name="shipment_id" />
+            </Principal>
+            <Dependent Role="Bookings">
+              <PropertyRef Name="shipment_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Bookings__trip_i__22751F6C">
+          <End Role="Trips" Type="Self.Trips" Multiplicity="0..1" />
+          <End Role="Bookings" Type="Self.Bookings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Trips">
+              <PropertyRef Name="trip_id" />
+            </Principal>
+            <Dependent Role="Bookings">
+              <PropertyRef Name="trip_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ChatAttac__messa__40F9A68C">
+          <End Role="ChatMessages" Type="Self.ChatMessages" Multiplicity="1" />
+          <End Role="ChatAttachments" Type="Self.ChatAttachments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ChatMessages">
+              <PropertyRef Name="message_id" />
+            </Principal>
+            <Dependent Role="ChatAttachments">
+              <PropertyRef Name="message_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ChatMessa__sende__3D2915A8">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="ChatMessages" Type="Self.ChatMessages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="ChatMessages">
+              <PropertyRef Name="sender_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ChatMessa__threa__3C34F16F">
+          <End Role="ChatThreads" Type="Self.ChatThreads" Multiplicity="1" />
+          <End Role="ChatMessages" Type="Self.ChatMessages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ChatThreads">
+              <PropertyRef Name="thread_id" />
+            </Principal>
+            <Dependent Role="ChatMessages">
+              <PropertyRef Name="thread_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ChatThrea__creat__367C1819">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="ChatThreads" Type="Self.ChatThreads" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="ChatThreads">
+              <PropertyRef Name="created_by_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ChatThrea__shipm__3587F3E0">
+          <End Role="Shipments" Type="Self.Shipments" Multiplicity="0..1" />
+          <End Role="ChatThreads" Type="Self.ChatThreads" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Shipments">
+              <PropertyRef Name="shipment_id" />
+            </Principal>
+            <Dependent Role="ChatThreads">
+              <PropertyRef Name="shipment_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TripCheck__check__2645B050">
+          <End Role="Checkpoints" Type="Self.Checkpoints" Multiplicity="1" />
+          <End Role="TripCheckpoints" Type="Self.TripCheckpoints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Checkpoints">
+              <PropertyRef Name="checkpoint_id" />
+            </Principal>
+            <Dependent Role="TripCheckpoints">
+              <PropertyRef Name="checkpoint_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Checkpoints_Driver">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="0..1" />
+          <End Role="Checkpoints" Type="Self.Checkpoints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="driver_id" />
+            </Principal>
+            <Dependent Role="Checkpoints">
+              <PropertyRef Name="driver_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Checkpoints_Routes">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="Checkpoints" Type="Self.Checkpoints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="route_id" />
+            </Principal>
+            <Dependent Role="Checkpoints">
+              <PropertyRef Name="route_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Customer__user_i__59063A47">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Customer" Type="Self.Customer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Customer">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Shipments__custo__05D8E0BE">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="Shipments" Type="Self.Shipments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="customer_id" />
+            </Principal>
+            <Dependent Role="Shipments">
+              <PropertyRef Name="customer_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Driver__user_id__5DCAEF64">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Driver" Type="Self.Driver" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Driver">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__DriverDoc__drive__66603565">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="1" />
+          <End Role="DriverDocuments" Type="Self.DriverDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="driver_id" />
+            </Principal>
+            <Dependent Role="DriverDocuments">
+              <PropertyRef Name="driver_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Requests__driver__0C85DE4D">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="1" />
+          <End Role="Requests" Type="Self.Requests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="driver_id" />
+            </Principal>
+            <Dependent Role="Requests">
+              <PropertyRef Name="driver_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Routes__driver_i__71D1E811">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="1" />
+          <End Role="Routes" Type="Self.Routes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="driver_id" />
+            </Principal>
+            <Dependent Role="Routes">
+              <PropertyRef Name="driver_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Trips__driver_id__18EBB532">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="1" />
+          <End Role="Trips" Type="Self.Trips" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="driver_id" />
+            </Principal>
+            <Dependent Role="Trips">
+              <PropertyRef Name="driver_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Vehicle__driver___693CA210">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="0..1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="driver_id" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="driver_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Notificat__user___45BE5BA9">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Notifications" Type="Self.Notifications" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Notifications">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PackageAt__attri__151B244E">
+          <End Role="PackageAttributes" Type="Self.PackageAttributes" Multiplicity="1" />
+          <End Role="PackageAttributeMapping" Type="Self.PackageAttributeMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PackageAttributes">
+              <PropertyRef Name="attribute_id" />
+            </Principal>
+            <Dependent Role="PackageAttributeMapping">
+              <PropertyRef Name="attribute_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PackageAt__packa__14270015">
+          <End Role="Packages" Type="Self.Packages" Multiplicity="1" />
+          <End Role="PackageAttributeMapping" Type="Self.PackageAttributeMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Packages">
+              <PropertyRef Name="package_id" />
+            </Principal>
+            <Dependent Role="PackageAttributeMapping">
+              <PropertyRef Name="package_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Packages__shipme__0F624AF8">
+          <End Role="Shipments" Type="Self.Shipments" Multiplicity="1" />
+          <End Role="Packages" Type="Self.Packages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Shipments">
+              <PropertyRef Name="shipment_id" />
+            </Principal>
+            <Dependent Role="Packages">
+              <PropertyRef Name="shipment_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Recipient__shipm__08B54D69">
+          <End Role="Shipments" Type="Self.Shipments" Multiplicity="1" />
+          <End Role="RecipientDetails" Type="Self.RecipientDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Shipments">
+              <PropertyRef Name="shipment_id" />
+            </Principal>
+            <Dependent Role="RecipientDetails">
+              <PropertyRef Name="shipment_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Requests__shipme__73852659">
+          <End Role="Shipments" Type="Self.Shipments" Multiplicity="1" />
+          <End Role="Requests" Type="Self.Requests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Shipments">
+              <PropertyRef Name="shipment_id" />
+            </Principal>
+            <Dependent Role="Requests">
+              <PropertyRef Name="shipment_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Reviews__reviewe__31B762FC">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Reviews" Type="Self.Reviews" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Reviews">
+              <PropertyRef Name="reviewer_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Reviews__target___32AB8735">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Reviews" Type="Self.Reviews" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Reviews">
+              <PropertyRef Name="target_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Reviews__trip_id__30C33EC3">
+          <End Role="Trips" Type="Self.Trips" Multiplicity="1" />
+          <End Role="Reviews" Type="Self.Reviews" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Trips">
+              <PropertyRef Name="trip_id" />
+            </Principal>
+            <Dependent Role="Reviews">
+              <PropertyRef Name="trip_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Users__role_id__5165187F">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="1" />
+          <End Role="Users" Type="Self.Users" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="role_id" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="role_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RoutePreferences_Route">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="RoutePreferences" Type="Self.RoutePreferences" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="route_id" />
+            </Principal>
+            <Dependent Role="RoutePreferences">
+              <PropertyRef Name="route_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Trips__route_id__1AD3FDA4">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="Trips" Type="Self.Trips" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="route_id" />
+            </Principal>
+            <Dependent Role="Trips">
+              <PropertyRef Name="route_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RouteSchedule_Routes">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="RouteSchedule" Type="Self.RouteSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="route_id" />
+            </Principal>
+            <Dependent Role="RouteSchedule">
+              <PropertyRef Name="route_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TripCheck__trip___25518C17">
+          <End Role="Trips" Type="Self.Trips" Multiplicity="1" />
+          <End Role="TripCheckpoints" Type="Self.TripCheckpoints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Trips">
+              <PropertyRef Name="trip_id" />
+            </Principal>
+            <Dependent Role="TripCheckpoints">
+              <PropertyRef Name="trip_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TripDelay__trip___2A164134">
+          <End Role="Trips" Type="Self.Trips" Multiplicity="1" />
+          <End Role="TripDelays" Type="Self.TripDelays" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Trips">
+              <PropertyRef Name="trip_id" />
+            </Principal>
+            <Dependent Role="TripDelays">
+              <PropertyRef Name="trip_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Trips__vehicle_r__19DFD96B">
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="Trips" Type="Self.Trips" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicle">
+              <PropertyRef Name="vehicle_reg_no" />
+            </Principal>
+            <Dependent Role="Trips">
+              <PropertyRef Name="vehicle_reg_no" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TripStats__trip___2CF2ADDF">
+          <End Role="Trips" Type="Self.Trips" Multiplicity="1" />
+          <End Role="TripStats" Type="Self.TripStats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Trips">
+              <PropertyRef Name="trip_id" />
+            </Principal>
+            <Dependent Role="TripStats">
+              <PropertyRef Name="trip_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__UserSuspe__user___619B8048">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="UserSuspensions" Type="Self.UserSuspensions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="UserSuspensions">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__VehicleDo__vehic__6C190EBB">
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="VehicleDocuments" Type="Self.VehicleDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicle">
+              <PropertyRef Name="vehicle_reg_no" />
+            </Principal>
+            <Dependent Role="VehicleDocuments">
+              <PropertyRef Name="vehicle_reg_no" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CargoConnectEntity" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Admin" EntityType="Self.Admin" />
+          <EntitySet Name="Bookings" EntityType="Self.Bookings" />
+          <EntitySet Name="ChatAttachments" EntityType="Self.ChatAttachments" />
+          <EntitySet Name="ChatMessages" EntityType="Self.ChatMessages" />
+          <EntitySet Name="ChatThreads" EntityType="Self.ChatThreads" />
+          <EntitySet Name="Checkpoints" EntityType="Self.Checkpoints" />
+          <EntitySet Name="Customer" EntityType="Self.Customer" />
+          <EntitySet Name="Driver" EntityType="Self.Driver" />
+          <EntitySet Name="DriverDocuments" EntityType="Self.DriverDocuments" />
+          <EntitySet Name="Notifications" EntityType="Self.Notifications" />
+          <EntitySet Name="PackageAttributeMapping" EntityType="Self.PackageAttributeMapping" />
+          <EntitySet Name="PackageAttributes" EntityType="Self.PackageAttributes" />
+          <EntitySet Name="Packages" EntityType="Self.Packages" />
+          <EntitySet Name="RecipientDetails" EntityType="Self.RecipientDetails" />
+          <EntitySet Name="Requests" EntityType="Self.Requests" />
+          <EntitySet Name="Reviews" EntityType="Self.Reviews" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" />
+          <EntitySet Name="RoutePreferences" EntityType="Self.RoutePreferences" />
+          <EntitySet Name="Routes" EntityType="Self.Routes" />
+          <EntitySet Name="RouteSchedule" EntityType="Self.RouteSchedule" />
+          <EntitySet Name="Shipments" EntityType="Self.Shipments" />
+          <EntitySet Name="TripCheckpoints" EntityType="Self.TripCheckpoints" />
+          <EntitySet Name="TripDelays" EntityType="Self.TripDelays" />
+          <EntitySet Name="Trips" EntityType="Self.Trips" />
+          <EntitySet Name="TripStats" EntityType="Self.TripStats" />
+          <EntitySet Name="Users" EntityType="Self.Users" />
+          <EntitySet Name="UserSuspensions" EntityType="Self.UserSuspensions" />
+          <EntitySet Name="Vehicle" EntityType="Self.Vehicle" />
+          <EntitySet Name="VehicleDocuments" EntityType="Self.VehicleDocuments" />
+          <AssociationSet Name="FK__Admin__user_id__5535A963" Association="Self.FK__Admin__user_id__5535A963">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Admin" EntitySet="Admin" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ChatThrea__assig__37703C52" Association="Self.FK__ChatThrea__assig__37703C52">
+            <End Role="Admin" EntitySet="Admin" />
+            <End Role="ChatThreads" EntitySet="ChatThreads" />
+          </AssociationSet>
+          <AssociationSet Name="FK__UserSuspe__admin__628FA481" Association="Self.FK__UserSuspe__admin__628FA481">
+            <End Role="Admin" EntitySet="Admin" />
+            <End Role="UserSuspensions" EntitySet="UserSuspensions" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Bookings__custom__208CD6FA" Association="Self.FK__Bookings__custom__208CD6FA">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="Bookings" EntitySet="Bookings" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Bookings__route___2180FB33" Association="Self.FK__Bookings__route___2180FB33">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Bookings" EntitySet="Bookings" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Bookings__shipme__1F98B2C1" Association="Self.FK__Bookings__shipme__1F98B2C1">
+            <End Role="Shipments" EntitySet="Shipments" />
+            <End Role="Bookings" EntitySet="Bookings" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Bookings__trip_i__22751F6C" Association="Self.FK__Bookings__trip_i__22751F6C">
+            <End Role="Trips" EntitySet="Trips" />
+            <End Role="Bookings" EntitySet="Bookings" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ChatAttac__messa__40F9A68C" Association="Self.FK__ChatAttac__messa__40F9A68C">
+            <End Role="ChatMessages" EntitySet="ChatMessages" />
+            <End Role="ChatAttachments" EntitySet="ChatAttachments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ChatMessa__sende__3D2915A8" Association="Self.FK__ChatMessa__sende__3D2915A8">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="ChatMessages" EntitySet="ChatMessages" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ChatMessa__threa__3C34F16F" Association="Self.FK__ChatMessa__threa__3C34F16F">
+            <End Role="ChatThreads" EntitySet="ChatThreads" />
+            <End Role="ChatMessages" EntitySet="ChatMessages" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ChatThrea__creat__367C1819" Association="Self.FK__ChatThrea__creat__367C1819">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="ChatThreads" EntitySet="ChatThreads" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ChatThrea__shipm__3587F3E0" Association="Self.FK__ChatThrea__shipm__3587F3E0">
+            <End Role="Shipments" EntitySet="Shipments" />
+            <End Role="ChatThreads" EntitySet="ChatThreads" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TripCheck__check__2645B050" Association="Self.FK__TripCheck__check__2645B050">
+            <End Role="Checkpoints" EntitySet="Checkpoints" />
+            <End Role="TripCheckpoints" EntitySet="TripCheckpoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Checkpoints_Driver" Association="Self.FK_Checkpoints_Driver">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="Checkpoints" EntitySet="Checkpoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Checkpoints_Routes" Association="Self.FK_Checkpoints_Routes">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Checkpoints" EntitySet="Checkpoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Customer__user_i__59063A47" Association="Self.FK__Customer__user_i__59063A47">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Customer" EntitySet="Customer" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Shipments__custo__05D8E0BE" Association="Self.FK__Shipments__custo__05D8E0BE">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="Shipments" EntitySet="Shipments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Driver__user_id__5DCAEF64" Association="Self.FK__Driver__user_id__5DCAEF64">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Driver" EntitySet="Driver" />
+          </AssociationSet>
+          <AssociationSet Name="FK__DriverDoc__drive__66603565" Association="Self.FK__DriverDoc__drive__66603565">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="DriverDocuments" EntitySet="DriverDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Requests__driver__0C85DE4D" Association="Self.FK__Requests__driver__0C85DE4D">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="Requests" EntitySet="Requests" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Routes__driver_i__71D1E811" Association="Self.FK__Routes__driver_i__71D1E811">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="Routes" EntitySet="Routes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Trips__driver_id__18EBB532" Association="Self.FK__Trips__driver_id__18EBB532">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="Trips" EntitySet="Trips" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Vehicle__driver___693CA210" Association="Self.FK__Vehicle__driver___693CA210">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="Vehicle" EntitySet="Vehicle" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Notificat__user___45BE5BA9" Association="Self.FK__Notificat__user___45BE5BA9">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Notifications" EntitySet="Notifications" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PackageAt__attri__151B244E" Association="Self.FK__PackageAt__attri__151B244E">
+            <End Role="PackageAttributes" EntitySet="PackageAttributes" />
+            <End Role="PackageAttributeMapping" EntitySet="PackageAttributeMapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PackageAt__packa__14270015" Association="Self.FK__PackageAt__packa__14270015">
+            <End Role="Packages" EntitySet="Packages" />
+            <End Role="PackageAttributeMapping" EntitySet="PackageAttributeMapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Packages__shipme__0F624AF8" Association="Self.FK__Packages__shipme__0F624AF8">
+            <End Role="Shipments" EntitySet="Shipments" />
+            <End Role="Packages" EntitySet="Packages" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Recipient__shipm__08B54D69" Association="Self.FK__Recipient__shipm__08B54D69">
+            <End Role="Shipments" EntitySet="Shipments" />
+            <End Role="RecipientDetails" EntitySet="RecipientDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Requests__shipme__73852659" Association="Self.FK__Requests__shipme__73852659">
+            <End Role="Shipments" EntitySet="Shipments" />
+            <End Role="Requests" EntitySet="Requests" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Reviews__reviewe__31B762FC" Association="Self.FK__Reviews__reviewe__31B762FC">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Reviews" EntitySet="Reviews" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Reviews__target___32AB8735" Association="Self.FK__Reviews__target___32AB8735">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Reviews" EntitySet="Reviews" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Reviews__trip_id__30C33EC3" Association="Self.FK__Reviews__trip_id__30C33EC3">
+            <End Role="Trips" EntitySet="Trips" />
+            <End Role="Reviews" EntitySet="Reviews" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Users__role_id__5165187F" Association="Self.FK__Users__role_id__5165187F">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RoutePreferences_Route" Association="Self.FK_RoutePreferences_Route">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="RoutePreferences" EntitySet="RoutePreferences" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Trips__route_id__1AD3FDA4" Association="Self.FK__Trips__route_id__1AD3FDA4">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Trips" EntitySet="Trips" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RouteSchedule_Routes" Association="Self.FK_RouteSchedule_Routes">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="RouteSchedule" EntitySet="RouteSchedule" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TripCheck__trip___25518C17" Association="Self.FK__TripCheck__trip___25518C17">
+            <End Role="Trips" EntitySet="Trips" />
+            <End Role="TripCheckpoints" EntitySet="TripCheckpoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TripDelay__trip___2A164134" Association="Self.FK__TripDelay__trip___2A164134">
+            <End Role="Trips" EntitySet="Trips" />
+            <End Role="TripDelays" EntitySet="TripDelays" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Trips__vehicle_r__19DFD96B" Association="Self.FK__Trips__vehicle_r__19DFD96B">
+            <End Role="Vehicle" EntitySet="Vehicle" />
+            <End Role="Trips" EntitySet="Trips" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TripStats__trip___2CF2ADDF" Association="Self.FK__TripStats__trip___2CF2ADDF">
+            <End Role="Trips" EntitySet="Trips" />
+            <End Role="TripStats" EntitySet="TripStats" />
+          </AssociationSet>
+          <AssociationSet Name="FK__UserSuspe__user___619B8048" Association="Self.FK__UserSuspe__user___619B8048">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserSuspensions" EntitySet="UserSuspensions" />
+          </AssociationSet>
+          <AssociationSet Name="FK__VehicleDo__vehic__6C190EBB" Association="Self.FK__VehicleDo__vehic__6C190EBB">
+            <End Role="Vehicle" EntitySet="Vehicle" />
+            <End Role="VehicleDocuments" EntitySet="VehicleDocuments" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="CargoConnectModelStoreContainer" CdmEntityContainer="CargoConnectEntity">
+          <EntitySetMapping Name="Admin">
+            <EntityTypeMapping TypeName="CargoConnectModel.Admin">
+              <MappingFragment StoreEntitySet="Admin">
+                <ScalarProperty Name="admin_id" ColumnName="admin_id" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="first_name" ColumnName="first_name" />
+                <ScalarProperty Name="last_name" ColumnName="last_name" />
+                <ScalarProperty Name="CNIC" ColumnName="CNIC" />
+                <ScalarProperty Name="contact_no" ColumnName="contact_no" />
+                <ScalarProperty Name="street_no" ColumnName="street_no" />
+                <ScalarProperty Name="city" ColumnName="city" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Bookings">
+            <EntityTypeMapping TypeName="CargoConnectModel.Bookings">
+              <MappingFragment StoreEntitySet="Bookings">
+                <ScalarProperty Name="booking_id" ColumnName="booking_id" />
+                <ScalarProperty Name="shipment_id" ColumnName="shipment_id" />
+                <ScalarProperty Name="customer_id" ColumnName="customer_id" />
+                <ScalarProperty Name="route_id" ColumnName="route_id" />
+                <ScalarProperty Name="trip_id" ColumnName="trip_id" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="amount" ColumnName="amount" />
+                <ScalarProperty Name="cancel_reason" ColumnName="cancel_reason" />
+                <ScalarProperty Name="created_at" ColumnName="created_at" />
+                <ScalarProperty Name="updated_at" ColumnName="updated_at" />
+                <ScalarProperty Name="booking_type" ColumnName="booking_type" />
+                <ScalarProperty Name="pickup_date" ColumnName="pickup_date" />
+                <ScalarProperty Name="delivery_date" ColumnName="delivery_date" />
+                <ScalarProperty Name="estimated_delivery_datetime" ColumnName="estimated_delivery_datetime" />
+                <ScalarProperty Name="actual_delivery_datetime" ColumnName="actual_delivery_datetime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ChatAttachments">
+            <EntityTypeMapping TypeName="CargoConnectModel.ChatAttachments">
+              <MappingFragment StoreEntitySet="ChatAttachments">
+                <ScalarProperty Name="attachment_id" ColumnName="attachment_id" />
+                <ScalarProperty Name="message_id" ColumnName="message_id" />
+                <ScalarProperty Name="file_url" ColumnName="file_url" />
+                <ScalarProperty Name="file_type" ColumnName="file_type" />
+                <ScalarProperty Name="uploaded_at" ColumnName="uploaded_at" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ChatMessages">
+            <EntityTypeMapping TypeName="CargoConnectModel.ChatMessages">
+              <MappingFragment StoreEntitySet="ChatMessages">
+                <ScalarProperty Name="message_id" ColumnName="message_id" />
+                <ScalarProperty Name="thread_id" ColumnName="thread_id" />
+                <ScalarProperty Name="sender_user_id" ColumnName="sender_user_id" />
+                <ScalarProperty Name="message_text" ColumnName="message_text" />
+                <ScalarProperty Name="is_read" ColumnName="is_read" />
+                <ScalarProperty Name="sent_at" ColumnName="sent_at" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ChatThreads">
+            <EntityTypeMapping TypeName="CargoConnectModel.ChatThreads">
+              <MappingFragment StoreEntitySet="ChatThreads">
+                <ScalarProperty Name="thread_id" ColumnName="thread_id" />
+                <ScalarProperty Name="thread_type" ColumnName="thread_type" />
+                <ScalarProperty Name="shipment_id" ColumnName="shipment_id" />
+                <ScalarProperty Name="created_by_user_id" ColumnName="created_by_user_id" />
+                <ScalarProperty Name="assigned_admin_id" ColumnName="assigned_admin_id" />
+                <ScalarProperty Name="status" ColumnName="status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Checkpoints">
+            <EntityTypeMapping TypeName="CargoConnectModel.Checkpoints">
+              <MappingFragment StoreEntitySet="Checkpoints">
+                <ScalarProperty Name="checkpoint_id" ColumnName="checkpoint_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="latitude" ColumnName="latitude" />
+                <ScalarProperty Name="longitude" ColumnName="longitude" />
+                <ScalarProperty Name="driver_id" ColumnName="driver_id" />
+                <ScalarProperty Name="route_id" ColumnName="route_id" />
+                <ScalarProperty Name="sequence_no" ColumnName="sequence_no" />
+                <ScalarProperty Name="reached" ColumnName="reached" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Customer">
+            <EntityTypeMapping TypeName="CargoConnectModel.Customer">
+              <MappingFragment StoreEntitySet="Customer">
+                <ScalarProperty Name="customer_id" ColumnName="customer_id" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="first_name" ColumnName="first_name" />
+                <ScalarProperty Name="last_name" ColumnName="last_name" />
+                <ScalarProperty Name="CNIC" ColumnName="CNIC" />
+                <ScalarProperty Name="contact_no" ColumnName="contact_no" />
+                <ScalarProperty Name="street_no" ColumnName="street_no" />
+                <ScalarProperty Name="city" ColumnName="city" />
+                <ScalarProperty Name="profile_image_url" ColumnName="profile_image_url" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Driver">
+            <EntityTypeMapping TypeName="CargoConnectModel.Driver">
+              <MappingFragment StoreEntitySet="Driver">
+                <ScalarProperty Name="driver_id" ColumnName="driver_id" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="first_name" ColumnName="first_name" />
+                <ScalarProperty Name="last_name" ColumnName="last_name" />
+                <ScalarProperty Name="CNIC" ColumnName="CNIC" />
+                <ScalarProperty Name="contact_no" ColumnName="contact_no" />
+                <ScalarProperty Name="licence_no" ColumnName="licence_no" />
+                <ScalarProperty Name="street_no" ColumnName="street_no" />
+                <ScalarProperty Name="city" ColumnName="city" />
+                <ScalarProperty Name="profile_image_url" ColumnName="profile_image_url" />
+                <ScalarProperty Name="is_available" ColumnName="is_available" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DriverDocuments">
+            <EntityTypeMapping TypeName="CargoConnectModel.DriverDocuments">
+              <MappingFragment StoreEntitySet="DriverDocuments">
+                <ScalarProperty Name="document_id" ColumnName="document_id" />
+                <ScalarProperty Name="driver_id" ColumnName="driver_id" />
+                <ScalarProperty Name="uploaded_at" ColumnName="uploaded_at" />
+                <ScalarProperty Name="cnic_link" ColumnName="cnic_link" />
+                <ScalarProperty Name="license_link" ColumnName="license_link" />
+                <ScalarProperty Name="front_link" ColumnName="front_link" />
+                <ScalarProperty Name="back_link" ColumnName="back_link" />
+                <ScalarProperty Name="photo_link" ColumnName="photo_link" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Notifications">
+            <EntityTypeMapping TypeName="CargoConnectModel.Notifications">
+              <MappingFragment StoreEntitySet="Notifications">
+                <ScalarProperty Name="notification_id" ColumnName="notification_id" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="message" ColumnName="message" />
+                <ScalarProperty Name="related_entity_type" ColumnName="related_entity_type" />
+                <ScalarProperty Name="related_entity_id" ColumnName="related_entity_id" />
+                <ScalarProperty Name="is_read" ColumnName="is_read" />
+                <ScalarProperty Name="read_at" ColumnName="read_at" />
+                <ScalarProperty Name="created_at" ColumnName="created_at" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PackageAttributeMapping">
+            <EntityTypeMapping TypeName="CargoConnectModel.PackageAttributeMapping">
+              <MappingFragment StoreEntitySet="PackageAttributeMapping">
+                <ScalarProperty Name="mapping_id" ColumnName="mapping_id" />
+                <ScalarProperty Name="package_id" ColumnName="package_id" />
+                <ScalarProperty Name="attribute_id" ColumnName="attribute_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PackageAttributes">
+            <EntityTypeMapping TypeName="CargoConnectModel.PackageAttributes">
+              <MappingFragment StoreEntitySet="PackageAttributes">
+                <ScalarProperty Name="attribute_id" ColumnName="attribute_id" />
+                <ScalarProperty Name="attribute_name" ColumnName="attribute_name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Packages">
+            <EntityTypeMapping TypeName="CargoConnectModel.Packages">
+              <MappingFragment StoreEntitySet="Packages">
+                <ScalarProperty Name="package_id" ColumnName="package_id" />
+                <ScalarProperty Name="shipment_id" ColumnName="shipment_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="weight" ColumnName="weight" />
+                <ScalarProperty Name="length" ColumnName="length" />
+                <ScalarProperty Name="width" ColumnName="width" />
+                <ScalarProperty Name="height" ColumnName="height" />
+                <ScalarProperty Name="quantity" ColumnName="quantity" />
+                <ScalarProperty Name="Mapping_id" ColumnName="Mapping_id" />
+                <ScalarProperty Name="color" ColumnName="color" />
+                <ScalarProperty Name="tagNo" ColumnName="tagNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecipientDetails">
+            <EntityTypeMapping TypeName="CargoConnectModel.RecipientDetails">
+              <MappingFragment StoreEntitySet="RecipientDetails">
+                <ScalarProperty Name="recipient_detail_id" ColumnName="recipient_detail_id" />
+                <ScalarProperty Name="shipment_id" ColumnName="shipment_id" />
+                <ScalarProperty Name="recipient_fname" ColumnName="recipient_fname" />
+                <ScalarProperty Name="recipient_lname" ColumnName="recipient_lname" />
+                <ScalarProperty Name="recipient_contact" ColumnName="recipient_contact" />
+                <ScalarProperty Name="instructionsMessage" ColumnName="instructionsMessage" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Requests">
+            <EntityTypeMapping TypeName="CargoConnectModel.Requests">
+              <MappingFragment StoreEntitySet="Requests">
+                <ScalarProperty Name="request_id" ColumnName="request_id" />
+                <ScalarProperty Name="driver_id" ColumnName="driver_id" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="fare" ColumnName="fare" />
+                <ScalarProperty Name="route_id" ColumnName="route_id" />
+                <ScalarProperty Name="shipment_id" ColumnName="shipment_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Reviews">
+            <EntityTypeMapping TypeName="CargoConnectModel.Reviews">
+              <MappingFragment StoreEntitySet="Reviews">
+                <ScalarProperty Name="review_id" ColumnName="review_id" />
+                <ScalarProperty Name="trip_id" ColumnName="trip_id" />
+                <ScalarProperty Name="reviewer_user_id" ColumnName="reviewer_user_id" />
+                <ScalarProperty Name="target_user_id" ColumnName="target_user_id" />
+                <ScalarProperty Name="rating" ColumnName="rating" />
+                <ScalarProperty Name="comments" ColumnName="comments" />
+                <ScalarProperty Name="created_at" ColumnName="created_at" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Roles">
+            <EntityTypeMapping TypeName="CargoConnectModel.Roles">
+              <MappingFragment StoreEntitySet="Roles">
+                <ScalarProperty Name="role_id" ColumnName="role_id" />
+                <ScalarProperty Name="role_name" ColumnName="role_name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RoutePreferences">
+            <EntityTypeMapping TypeName="CargoConnectModel.RoutePreferences">
+              <MappingFragment StoreEntitySet="RoutePreferences">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="route_id" ColumnName="route_id" />
+                <ScalarProperty Name="is_fragile" ColumnName="is_fragile" />
+                <ScalarProperty Name="is_liquid" ColumnName="is_liquid" />
+                <ScalarProperty Name="is_flammable" ColumnName="is_flammable" />
+                <ScalarProperty Name="keep_upright" ColumnName="keep_upright" />
+                <ScalarProperty Name="shipment_type" ColumnName="shipment_type" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Routes">
+            <EntityTypeMapping TypeName="CargoConnectModel.Routes">
+              <MappingFragment StoreEntitySet="Routes">
+                <ScalarProperty Name="route_id" ColumnName="route_id" />
+                <ScalarProperty Name="driver_id" ColumnName="driver_id" />
+                <ScalarProperty Name="is_active" ColumnName="is_active" />
+                <ScalarProperty Name="is_next_route" ColumnName="is_next_route" />
+                <ScalarProperty Name="base_fare" ColumnName="base_fare" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RouteSchedule">
+            <EntityTypeMapping TypeName="CargoConnectModel.RouteSchedule">
+              <MappingFragment StoreEntitySet="RouteSchedule">
+                <ScalarProperty Name="routeScheduleId" ColumnName="routeScheduleId" />
+                <ScalarProperty Name="route_id" ColumnName="route_id" />
+                <ScalarProperty Name="departureDate" ColumnName="departureDate" />
+                <ScalarProperty Name="arrivalDate" ColumnName="arrivalDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Shipments">
+            <EntityTypeMapping TypeName="CargoConnectModel.Shipments">
+              <MappingFragment StoreEntitySet="Shipments">
+                <ScalarProperty Name="shipment_id" ColumnName="shipment_id" />
+                <ScalarProperty Name="sender_name" ColumnName="sender_name" />
+                <ScalarProperty Name="sender_contact" ColumnName="sender_contact" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="customer_id" ColumnName="customer_id" />
+                <ScalarProperty Name="strict" ColumnName="strict" />
+                <ScalarProperty Name="package_count" ColumnName="package_count" />
+                <ScalarProperty Name="total_weight" ColumnName="total_weight" />
+                <ScalarProperty Name="pickup_lat" ColumnName="pickup_lat" />
+                <ScalarProperty Name="pickup_long" ColumnName="pickup_long" />
+                <ScalarProperty Name="pickup_address" ColumnName="pickup_address" />
+                <ScalarProperty Name="delivery_lat" ColumnName="delivery_lat" />
+                <ScalarProperty Name="delivery_long" ColumnName="delivery_long" />
+                <ScalarProperty Name="delivery_address" ColumnName="delivery_address" />
+                <ScalarProperty Name="pickup_date" ColumnName="pickup_date" />
+                <ScalarProperty Name="shipment_radius" ColumnName="shipment_radius" />
+                <ScalarProperty Name="shipment_type" ColumnName="shipment_type" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TripCheckpoints">
+            <EntityTypeMapping TypeName="CargoConnectModel.TripCheckpoints">
+              <MappingFragment StoreEntitySet="TripCheckpoints">
+                <ScalarProperty Name="checkpoint_event_id" ColumnName="checkpoint_event_id" />
+                <ScalarProperty Name="trip_id" ColumnName="trip_id" />
+                <ScalarProperty Name="checkpoint_id" ColumnName="checkpoint_id" />
+                <ScalarProperty Name="reached_at" ColumnName="reached_at" />
+                <ScalarProperty Name="sequence_no" ColumnName="sequence_no" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TripDelays">
+            <EntityTypeMapping TypeName="CargoConnectModel.TripDelays">
+              <MappingFragment StoreEntitySet="TripDelays">
+                <ScalarProperty Name="delay_id" ColumnName="delay_id" />
+                <ScalarProperty Name="trip_id" ColumnName="trip_id" />
+                <ScalarProperty Name="expected_delivery_date" ColumnName="expected_delivery_date" />
+                <ScalarProperty Name="expected_delivery_time" ColumnName="expected_delivery_time" />
+                <ScalarProperty Name="reason" ColumnName="reason" />
+                <ScalarProperty Name="created_at" ColumnName="created_at" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Trips">
+            <EntityTypeMapping TypeName="CargoConnectModel.Trips">
+              <MappingFragment StoreEntitySet="Trips">
+                <ScalarProperty Name="trip_id" ColumnName="trip_id" />
+                <ScalarProperty Name="driver_id" ColumnName="driver_id" />
+                <ScalarProperty Name="vehicle_reg_no" ColumnName="vehicle_reg_no" />
+                <ScalarProperty Name="route_id" ColumnName="route_id" />
+                <ScalarProperty Name="start_time" ColumnName="start_time" />
+                <ScalarProperty Name="end_time" ColumnName="end_time" />
+                <ScalarProperty Name="status" ColumnName="status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TripStats">
+            <EntityTypeMapping TypeName="CargoConnectModel.TripStats">
+              <MappingFragment StoreEntitySet="TripStats">
+                <ScalarProperty Name="stat_id" ColumnName="stat_id" />
+                <ScalarProperty Name="trip_id" ColumnName="trip_id" />
+                <ScalarProperty Name="weight" ColumnName="weight" />
+                <ScalarProperty Name="length" ColumnName="length" />
+                <ScalarProperty Name="width" ColumnName="width" />
+                <ScalarProperty Name="height" ColumnName="height" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="CargoConnectModel.Users">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="role_id" ColumnName="role_id" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="joindate" ColumnName="joindate" />
+                <ScalarProperty Name="suspended" ColumnName="suspended" />
+                <ScalarProperty Name="is_active" ColumnName="is_active" />
+                <ScalarProperty Name="last_login" ColumnName="last_login" />
+                <ScalarProperty Name="updated_at" ColumnName="updated_at" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserSuspensions">
+            <EntityTypeMapping TypeName="CargoConnectModel.UserSuspensions">
+              <MappingFragment StoreEntitySet="UserSuspensions">
+                <ScalarProperty Name="suspension_id" ColumnName="suspension_id" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="admin_id" ColumnName="admin_id" />
+                <ScalarProperty Name="reason" ColumnName="reason" />
+                <ScalarProperty Name="created_at" ColumnName="created_at" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Vehicle">
+            <EntityTypeMapping TypeName="CargoConnectModel.Vehicle">
+              <MappingFragment StoreEntitySet="Vehicle">
+                <ScalarProperty Name="vehicle_reg_no" ColumnName="vehicle_reg_no" />
+                <ScalarProperty Name="model" ColumnName="model" />
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="weight_capacity" ColumnName="weight_capacity" />
+                <ScalarProperty Name="length" ColumnName="length" />
+                <ScalarProperty Name="width" ColumnName="width" />
+                <ScalarProperty Name="height" ColumnName="height" />
+                <ScalarProperty Name="driver_id" ColumnName="driver_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VehicleDocuments">
+            <EntityTypeMapping TypeName="CargoConnectModel.VehicleDocuments">
+              <MappingFragment StoreEntitySet="VehicleDocuments">
+                <ScalarProperty Name="document_no" ColumnName="document_no" />
+                <ScalarProperty Name="vehicle_reg_no" ColumnName="vehicle_reg_no" />
+                <ScalarProperty Name="cnic_link" ColumnName="cnic_link" />
+                <ScalarProperty Name="license_link" ColumnName="license_link" />
+                <ScalarProperty Name="photo_link" ColumnName="photo_link" />
+                <ScalarProperty Name="front_link" ColumnName="front_link" />
+                <ScalarProperty Name="back_link" ColumnName="back_link" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
