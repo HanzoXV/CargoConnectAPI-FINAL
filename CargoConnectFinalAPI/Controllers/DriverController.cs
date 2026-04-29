@@ -676,6 +676,95 @@ namespace CargoConnectFinalAPI.Controllers
             var random = new Random();
             return "PKG-" + random.Next(100000, 999999).ToString();
         }
+        [HttpGet]
+        [Route("api/drivers/{driverId}/truck-stats")]
+        public IHttpActionResult GetTruckStats(int driverId)
+        {
+            try
+            {
+                var vehicle = db.Vehicle.FirstOrDefault(v => v.driver_id == driverId);
+                if (vehicle == null)
+                    return BadRequest("Vehicle not found for this driver");
+
+                // Get active route for this driver
+                var driverRouteIds = db.Routes
+                    .Where(r => r.driver_id == driverId &&
+                     (r.is_active == true || r.is_next_route == true))
+                    .Select(r => r.route_id)
+                    .ToList();
+
+                if (!driverRouteIds.Any())
+                    return BadRequest("No active or next route found");
+
+                // Get all active bookings across both routes
+                var activeBookings = db.Bookings
+                    .Where(b =>
+                        driverRouteIds.Contains(b.route_id) &&
+                        (b.status == "Assigned" || b.status == "In-Transit"))
+                    .ToList();
+
+                // Calculate used weight and volume from all active bookings
+                double usedWeight = 0;
+                double usedVolume = 0;
+
+                foreach (var booking in activeBookings)
+                {
+                    var shipment = db.Shipments.FirstOrDefault(s => s.shipment_id == booking.shipment_id);
+                    if (shipment == null) continue;
+                    usedWeight += shipment.total_weight ?? 0;
+                    usedVolume += CalculateShipmentVolume(booking.shipment_id);
+                }
+
+                // Truck total dimensions
+                double totalLength = vehicle.length ?? 0;
+                double totalWidth = vehicle.width ?? 0;
+                double totalHeight = vehicle.height ?? 0;
+                double totalVolume = totalLength * totalWidth * totalHeight;
+                double maxWeight = vehicle.weight_capacity ?? 0;
+
+                // Remaining
+                double remainingWeight = Math.Max(0, maxWeight - usedWeight);
+                double remainingVolume = Math.Max(0, totalVolume - usedVolume);
+
+                // Back-calculate remaining dimensions assuming uniform fill
+                // remaining as a ratio of total
+                double fillRatio = totalVolume > 0 ? (remainingVolume / totalVolume) : 0;
+                double remainingLength = Math.Round(totalLength * fillRatio, 2);
+                double remainingWidth = Math.Round(totalWidth * fillRatio, 2);
+                double remainingHeight = Math.Round(totalHeight * fillRatio, 2);
+
+                return Ok(new
+                {
+                    // Weight
+                    max_weight = Math.Round(maxWeight, 2),
+                    used_weight = Math.Round(usedWeight, 2),
+                    remaining_weight = Math.Round(remainingWeight, 2),
+
+                    // Total dimensions
+                    total_length = Math.Round(totalLength, 2),
+                    total_width = Math.Round(totalWidth, 2),
+                    total_height = Math.Round(totalHeight, 2),
+                    total_volume = Math.Round(totalVolume, 2),
+
+                    // Used
+                    used_volume = Math.Round(usedVolume, 2),
+
+                    // Remaining
+                    remaining_volume = Math.Round(remainingVolume, 2),
+                    remaining_length = remainingLength,
+                    remaining_width = remainingWidth,
+                    remaining_height = remainingHeight,
+
+                    // Meta
+                    active_bookings = activeBookings.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
 
     }
+
 }

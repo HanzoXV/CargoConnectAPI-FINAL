@@ -330,5 +330,32 @@ namespace CargoConnectFinalAPI.Controllers
 
             return Ok(bookings);
         }
+        [HttpGet]
+        [Route("api/customers/{customerId}/recent-packages")]
+        public IHttpActionResult GetRecentPackages(int customerId)
+        {
+            var recentPackages = db.Packages
+                .Where(p => db.Shipments
+                    .Where(s => s.customer_id == customerId)
+                    .Select(s => s.shipment_id)
+                    .Contains(p.shipment_id))
+                .OrderByDescending(p => p.package_id)
+                .ToList()
+                .GroupBy(p => p.name.ToLower().Trim())
+                .Select(g => g.First())
+                .Take(5)
+                .Select(p => new
+                {
+                    p.name,
+                    p.weight,
+                    p.length,
+                    p.width,
+                    p.height,
+                    p.quantity
+                })
+                .ToList();
+
+            return Ok(recentPackages);
+        }
     }
 }

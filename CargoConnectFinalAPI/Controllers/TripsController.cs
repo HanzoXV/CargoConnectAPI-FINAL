@@ -197,58 +197,50 @@ namespace CargoConnectFinalAPI.Controllers
                 if (checkpoint == null)
                     return BadRequest("Checkpoint not found");
 
-                checkpoint.reached = true;
                 int routeId = checkpoint.route_id;
 
-                // Verify checkpoint belongs to this driver
                 var route = db.Routes.FirstOrDefault(r => r.route_id == routeId && r.driver_id == driverId);
                 if (route == null)
                     return BadRequest("This checkpoint does not belong to the driver's route");
 
-                // LOAD — pickup location matches checkpoint → set to In-Transit
-                var toLoad = (
+                // Verify all pickups at this checkpoint are done
+                var pendingPickups = (
                     from b in db.Bookings
                     join s in db.Shipments on b.shipment_id equals s.shipment_id
                     join t in db.Trips on b.trip_id equals t.trip_id
                     where b.route_id == routeId
                        && t.driver_id == driverId
                        && b.status == "Assigned"
-                       && s.pickup_lat != null
-                       && s.pickup_long != null
+                       && s.pickup_lat != null && s.pickup_long != null
                        && Math.Abs(s.pickup_lat.Value - checkpoint.latitude.Value) < 0.05
                        && Math.Abs(s.pickup_long.Value - checkpoint.longitude.Value) < 0.05
-                    select new { booking = b, shipment = s }
+                    select b
                 ).ToList();
 
-                foreach (var item in toLoad)
-                {
-                    item.booking.status = "In-Transit";
-                    item.shipment.status = "In-Transit";
-                }
+                if (pendingPickups.Any())
+                    return BadRequest($"Please pickup all {pendingPickups.Count} remaining shipment(s) before confirming.");
 
-                // DROP — delivery location matches checkpoint → set to Delivered
-                var toDrop = (
+                // Verify all drop offs at this checkpoint are done
+                var pendingDropoffs = (
                     from b in db.Bookings
                     join s in db.Shipments on b.shipment_id equals s.shipment_id
                     join t in db.Trips on b.trip_id equals t.trip_id
                     where b.route_id == routeId
                        && t.driver_id == driverId
                        && b.status == "In-Transit"
-                       && s.delivery_lat != null
-                       && s.delivery_long != null
+                       && s.delivery_lat != null && s.delivery_long != null
                        && Math.Abs(s.delivery_lat.Value - checkpoint.latitude.Value) < 0.05
                        && Math.Abs(s.delivery_long.Value - checkpoint.longitude.Value) < 0.05
-                    select new { booking = b, shipment = s }
+                    select b
                 ).ToList();
 
-                foreach (var item in toDrop)
-                {
-                    item.booking.status = "Completed";
-                    item.booking.actual_delivery_datetime = DateTime.Now;
-                    item.shipment.status = "Delivered";
-                }
+                if (pendingDropoffs.Any())
+                    return BadRequest($"Please deliver all {pendingDropoffs.Count} remaining shipment(s) before confirming.");
 
-                // Check if this is the last checkpoint
+                // All done — mark checkpoint reached
+                checkpoint.reached = true;
+
+                // Check if last checkpoint
                 var lastCheckpoint = db.Checkpoints
                     .Where(c => c.route_id == routeId)
                     .OrderByDescending(c => c.sequence_no)
@@ -256,11 +248,8 @@ namespace CargoConnectFinalAPI.Controllers
 
                 if (lastCheckpoint != null && lastCheckpoint.checkpoint_id == checkpointId)
                 {
-                    // Complete the trip
                     var trip = db.Trips.FirstOrDefault(t =>
-                        t.route_id == routeId &&
-                        t.status == "In-Transit"
-                    );
+                        t.route_id == routeId && t.status == "In-Transit");
 
                     if (trip != null)
                     {
@@ -268,7 +257,6 @@ namespace CargoConnectFinalAPI.Controllers
                         trip.status = "Completed";
                     }
 
-                    // Rotate routes
                     var activeRoute = db.Routes.FirstOrDefault(r =>
                         r.route_id == routeId && r.is_active == true);
 
@@ -277,8 +265,7 @@ namespace CargoConnectFinalAPI.Controllers
                         var nextRoute = db.Routes.FirstOrDefault(r =>
                             r.driver_id == driverId &&
                             r.is_next_route == true &&
-                            r.route_id != routeId
-                        );
+                            r.route_id != routeId);
 
                         activeRoute.is_active = false;
                         activeRoute.is_next_route = false;
@@ -297,10 +284,68 @@ namespace CargoConnectFinalAPI.Controllers
                 {
                     message = "Checkpoint confirmed",
                     checkpoint_id = checkpointId,
-                    checkpoint_name = checkpoint.name,
-                    loaded = toLoad.Count,
-                    delivered = toDrop.Count
+                    checkpoint_name = checkpoint.name
                 });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+        [HttpPost]
+        [Route("api/bookings/{bookingId}/pickup")]
+        public IHttpActionResult PickupBooking(int bookingId, int driverId)
+        {
+            try
+            {
+                var booking = db.Bookings.FirstOrDefault(b => b.booking_id == bookingId);
+                if (booking == null)
+                    return BadRequest("Booking not found");
+
+                if (booking.status != "Assigned")
+                    return BadRequest("Booking is not in Assigned status");
+
+                var shipment = db.Shipments.FirstOrDefault(s => s.shipment_id == booking.shipment_id);
+                if (shipment == null)
+                    return BadRequest("Shipment not found");
+
+                booking.status = "In-Transit";
+                shipment.status = "In-Transit";
+
+                db.SaveChanges();
+
+                return Ok(new { message = "Booking picked up", bookingId = bookingId });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPost]
+        [Route("api/bookings/{bookingId}/deliver")]
+        public IHttpActionResult DeliverBooking(int bookingId, int driverId)
+        {
+            try
+            {
+                var booking = db.Bookings.FirstOrDefault(b => b.booking_id == bookingId);
+                if (booking == null)
+                    return BadRequest("Booking not found");
+
+                if (booking.status != "In-Transit")
+                    return BadRequest("Booking is not In-Transit");
+
+                var shipment = db.Shipments.FirstOrDefault(s => s.shipment_id == booking.shipment_id);
+                if (shipment == null)
+                    return BadRequest("Shipment not found");
+
+                booking.status = "Completed";
+                booking.actual_delivery_datetime = DateTime.Now;
+                shipment.status = "Delivered";
+
+                db.SaveChanges();
+
+                return Ok(new { message = "Booking delivered", bookingId = bookingId });
             }
             catch (Exception ex)
             {
