@@ -171,14 +171,19 @@ namespace CargoConnectFinalAPI.Controllers
                     var schedule = allSchedules.FirstOrDefault(s => s.route_id == route.route_id);
                     if (schedule == null) continue;
 
-                    // NOW USING DateTime directly instead of parsing string
-                    DateTime dep = schedule.departureDate ?? DateTime.Now;  // already DateTime in DB
+                    var pickupCheckpoint = checkpoints[pickupIndex];
+                    DateTime estimatedPickupTime = pickupCheckpoint.estimated_arrival_datetime ?? DateTime.Now;
 
-                    if (isStrict && requestedDate.Date != dep.Date)
-                        continue;
-
-                    if (!isStrict && dep.Date < requestedDate.Date)
-                        continue;
+                    if (isStrict)
+                    {
+                        if (requestedDate.Date != estimatedPickupTime.Date)
+                            continue;
+                    }
+                    else
+                    {
+                        if (estimatedPickupTime.Date < requestedDate.Date)
+                            continue;
+                    }
 
                     var preferences = db.RoutePreferences.FirstOrDefault(p => p.route_id == route.route_id);
                     if (preferences == null) continue;
@@ -478,6 +483,18 @@ namespace CargoConnectFinalAPI.Controllers
                 route_id = routeId,
                 fare = (decimal?)fare
             };
+            var customer = db.Shipments
+                .Where(s => s.shipment_id == shipmentId)
+                .Select(s => s.customer_id)
+                .FirstOrDefault();
+            var customerName = db.Customer
+                .Where(c => c.customer_id == customer)
+                .Select(c => c.first_name + " " + c.last_name)
+                .FirstOrDefault();
+
+            var driver = db.Driver.FirstOrDefault(d => d.driver_id == driverId);
+            if (driver != null)
+                NotificationHelper.Send(db, driver.user_id, "You have received a request from "+customerName+".");
 
             db.Requests.Add(request);
             db.SaveChanges();
@@ -539,7 +556,6 @@ namespace CargoConnectFinalAPI.Controllers
                 }
                 else if (shipmentType.ToLower() == "shared")
                 {
-                    // Shared — check weight and volume capacity
                     double maxWeight = vehicleForCheck.weight_capacity ?? 0;
                     double maxVolume = (vehicleForCheck.length ?? 0) * (vehicleForCheck.width ?? 0) * (vehicleForCheck.height ?? 0);
 
@@ -648,6 +664,15 @@ namespace CargoConnectFinalAPI.Controllers
                 }
 
                 db.SaveChanges();
+
+                var driverName = db.Driver
+                    .Where(d => d.driver_id == driverId)
+                    .Select(d => d.first_name + " " + d.last_name)
+                    .FirstOrDefault();
+
+                var customer = db.Customer.FirstOrDefault(c => c.customer_id == booking.customer_id);
+                if (customer != null)
+                    NotificationHelper.Send(db, customer.user_id, "Your request has been accepted by " + driverName + ".");
 
                 return Ok(new
                 {

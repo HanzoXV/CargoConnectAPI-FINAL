@@ -7,11 +7,13 @@ namespace CargoConnectFinalAPI.Models
 {
     public class RouteCheckpoint
     {
-        public string Name { get; set; }
+        public string name { get; set; }
 
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+        public double latitude { get; set; }
+        public double longitude { get; set; }
 
-        public int SequenceNo { get; set; }
+        public int sequenceNo { get; set; }
+
+        public DateTime? estimatedArrival { get; set; }
     }
 }

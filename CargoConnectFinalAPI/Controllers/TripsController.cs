@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Runtime.Remoting.Messaging;
 using System.Web.Http;
 
 namespace CargoConnectFinalAPI.Controllers
@@ -84,27 +85,28 @@ namespace CargoConnectFinalAPI.Controllers
 
             return Ok(bookings);
         }
-        [HttpGet]
         [Route("api/checkpoints/{checkpointId}/shipments")]
         public IHttpActionResult GetShipmentsAtCheckpoint(int checkpointId, int driverId)
         {
+
             var checkpoint = db.Checkpoints.FirstOrDefault(c => c.checkpoint_id == checkpointId);
             if (checkpoint == null)
                 return BadRequest("Checkpoint not found");
 
             int routeId = checkpoint.route_id;
 
-            // Verify checkpoint belongs to this driver's route
+
             var route = db.Routes.FirstOrDefault(r => r.route_id == routeId && r.driver_id == driverId);
             if (route == null)
                 return BadRequest("This checkpoint does not belong to the driver's route");
 
-            var allBookings = (
+
+            var bookingsData = (
                 from b in db.Bookings
                 join t in db.Trips on b.trip_id equals t.trip_id
                 join s in db.Shipments on b.shipment_id equals s.shipment_id
-                join r in db.RecipientDetails
-                    on b.shipment_id equals r.shipment_id into recipientGroup
+                join rd in db.RecipientDetails
+                    on b.shipment_id equals rd.shipment_id into recipientGroup
                 from r in recipientGroup.DefaultIfEmpty()
                 where b.route_id == routeId
                    && t.driver_id == driverId
@@ -115,70 +117,110 @@ namespace CargoConnectFinalAPI.Controllers
                    && s.pickup_long != null
                 select new
                 {
-                    booking_id = b.booking_id,
-                    shipment_id = b.shipment_id,
-                    status = b.status,
-                    amount = b.amount,
-                    pickup_date = b.pickup_date,
+                    b.booking_id,
+                    b.shipment_id,
+                    b.status,
+                    b.amount,
+                    b.pickup_date,
 
-                    // Shipment details
-                    pickup_address = s.pickup_address,
-                    pickup_lat = s.pickup_lat,
-                    pickup_long = s.pickup_long,
-                    delivery_address = s.delivery_address,
-                    delivery_lat = s.delivery_lat,
-                    delivery_long = s.delivery_long,
-                    sender_name = s.sender_name,
-                    sender_contact = s.sender_contact,
-                    total_weight = s.total_weight,
-                    package_count = s.package_count,
+                    // Shipment
+                    s.pickup_address,
+                    s.pickup_lat,
+                    s.pickup_long,
+                    s.delivery_address,
+                    s.delivery_lat,
+                    s.delivery_long,
+                    s.sender_name,
+                    s.sender_contact,
+                    s.total_weight,
+                    s.package_count,
 
                     // Recipient
                     recipient_name = r != null ? r.recipient_fname + " " + r.recipient_lname : null,
-                    recipient_contact = r != null ? r.recipient_contact : null,
+                    recipient_contact = r != null ? r.recipient_contact : null
+                }
+            ).ToList(); // ✅ only here
 
-                    // Packages
-                    packages = db.Packages
-                        .Where(p => p.shipment_id == b.shipment_id)
-                        .Select(p => new
-                        {
-                            p.shipment_id,
-                            p.name,
-                            p.weight,
-                            p.length,
-                            p.width,
-                            p.height,
-                            p.quantity,
-                            p.color,
-                            p.tagNo
-                        }).ToList()
-                }).ToList();
+            // 4. Fetch all packages in ONE query (no N+1 problem)
+            var shipmentIds = bookingsData.Select(x => x.shipment_id).Distinct().ToList();
 
-            // Shipments to DROP — delivery location matches this checkpoint
+            var allPackages = db.Packages
+                .Where(p => shipmentIds.Contains(p.shipment_id))
+                .Select(p => new
+                {
+                    p.shipment_id,
+                    p.name,
+                    p.weight,
+                    p.length,
+                    p.width,
+                    p.height,
+                    p.quantity,
+                    p.color,
+                    p.tagNo
+                })
+                .ToList();
+
+            // 5. Merge packages into bookings
+            var allBookings = bookingsData.Select(b => new
+            {
+                b.booking_id,
+                b.shipment_id,
+                b.status,
+                b.amount,
+                b.pickup_date,
+
+                b.pickup_address,
+                b.pickup_lat,
+                b.pickup_long,
+                b.delivery_address,
+                b.delivery_lat,
+                b.delivery_long,
+                b.sender_name,
+                b.sender_contact,
+                b.total_weight,
+                b.package_count,
+
+                b.recipient_name,
+                b.recipient_contact,
+
+                packages = allPackages
+                    .Where(p => p.shipment_id == b.shipment_id)
+                    .ToList()
+            }).ToList();
+
+            double checkpointLat = checkpoint.latitude ?? 0;
+            double checkpointLng = checkpoint.longitude ?? 0;
+
             var toDrop = allBookings
-                .Where(b =>
-                    b.delivery_lat.HasValue && b.delivery_long.HasValue &&
-                    Math.Abs(b.delivery_lat.Value - checkpoint.latitude.Value) < 0.05 &&
-                    Math.Abs(b.delivery_long.Value - checkpoint.longitude.Value) < 0.05
-                ).ToList();
+          .Where(b =>
+              b.status == "In-Transit" && 
+              b.delivery_lat.HasValue && b.delivery_long.HasValue &&
+              Math.Abs(b.delivery_lat.Value - checkpointLat) < 0.02 && 
+              Math.Abs(b.delivery_long.Value - checkpointLng) < 0.02
+          )
+          .ToList();
 
-            // Shipments to LOAD — pickup location matches this checkpoint
             var toLoad = allBookings
-                .Where(b =>
-                    b.pickup_lat.HasValue && b.pickup_long.HasValue &&
-                    Math.Abs(b.pickup_lat.Value - checkpoint.latitude.Value) < 0.05 &&
-                    Math.Abs(b.pickup_long.Value - checkpoint.longitude.Value) < 0.05
-                ).ToList();
+         .Where(b =>
+             b.status == "Assigned" &&  
+             b.pickup_lat.HasValue && b.pickup_long.HasValue &&
+             Math.Abs(b.pickup_lat.Value - checkpointLat) < 0.02 &&
+             Math.Abs(b.pickup_long.Value - checkpointLng) < 0.02
+         )
+         .ToList();
 
+            // 9. Final response
             return Ok(new
             {
                 checkpoint_id = checkpointId,
                 checkpoint_name = checkpoint.name,
+
                 to_load = new
                 {
                     total = toLoad.Count,
                     shipments = toLoad
                 },
+
                 to_drop = new
                 {
                     total = toDrop.Count,
@@ -191,110 +233,103 @@ namespace CargoConnectFinalAPI.Controllers
         [Route("api/checkpoints/{checkpointId}/confirm")]
         public IHttpActionResult ConfirmCheckpointReached(int checkpointId, int driverId)
         {
-            try
+
+            var checkpoint = db.Checkpoints.FirstOrDefault(c => c.checkpoint_id == checkpointId);
+            if (checkpoint == null)
+                return BadRequest("Checkpoint not found");
+
+            int routeId = checkpoint.route_id;
+
+            var route = db.Routes.FirstOrDefault(r => r.route_id == routeId && r.driver_id == driverId);
+            if (route == null)
+                return BadRequest("This checkpoint does not belong to the driver's route");
+
+            // Verify all pickups at this checkpoint are done
+            var pendingPickups = (
+                from b in db.Bookings
+                join s in db.Shipments on b.shipment_id equals s.shipment_id
+                join t in db.Trips on b.trip_id equals t.trip_id
+                where b.route_id == routeId
+                   && t.driver_id == driverId
+                   && b.status == "Assigned"
+                   && s.pickup_lat != null && s.pickup_long != null
+                   && Math.Abs(s.pickup_lat.Value - checkpoint.latitude.Value) < 0.02
+                   && Math.Abs(s.pickup_long.Value - checkpoint.longitude.Value) < 0.02
+                select b
+            ).ToList();
+
+            if (pendingPickups.Any())
+                return BadRequest($"Please pickup all {pendingPickups.Count} remaining shipment(s) before confirming.");
+
+            var pendingDropoffs = (
+                from b in db.Bookings
+                join s in db.Shipments on b.shipment_id equals s.shipment_id
+                join t in db.Trips on b.trip_id equals t.trip_id
+                where b.route_id == routeId
+                   && t.driver_id == driverId
+                   && b.status == "In-Transit"
+                   && s.delivery_lat != null && s.delivery_long != null
+                   && Math.Abs(s.delivery_lat.Value - checkpoint.latitude.Value) < 0.02
+                   && Math.Abs(s.delivery_long.Value - checkpoint.longitude.Value) < 0.02
+                select b
+            ).ToList();
+
+            if (pendingDropoffs.Any())
+                return BadRequest($"Please deliver all {pendingDropoffs.Count} remaining shipment(s) before confirming.");
+
+            checkpoint.reached = true;
+
+            var lastCheckpoint = db.Checkpoints
+                .Where(c => c.route_id == routeId)
+                .OrderByDescending(c => c.sequence_no)
+                .FirstOrDefault();
+
+            if (lastCheckpoint != null && lastCheckpoint.checkpoint_id == checkpointId)
             {
-                var checkpoint = db.Checkpoints.FirstOrDefault(c => c.checkpoint_id == checkpointId);
-                if (checkpoint == null)
-                    return BadRequest("Checkpoint not found");
+                var trip = db.Trips.FirstOrDefault(t =>
+                    t.route_id == routeId && t.status == "In-Transit");
 
-                int routeId = checkpoint.route_id;
-
-                var route = db.Routes.FirstOrDefault(r => r.route_id == routeId && r.driver_id == driverId);
-                if (route == null)
-                    return BadRequest("This checkpoint does not belong to the driver's route");
-
-                // Verify all pickups at this checkpoint are done
-                var pendingPickups = (
-                    from b in db.Bookings
-                    join s in db.Shipments on b.shipment_id equals s.shipment_id
-                    join t in db.Trips on b.trip_id equals t.trip_id
-                    where b.route_id == routeId
-                       && t.driver_id == driverId
-                       && b.status == "Assigned"
-                       && s.pickup_lat != null && s.pickup_long != null
-                       && Math.Abs(s.pickup_lat.Value - checkpoint.latitude.Value) < 0.05
-                       && Math.Abs(s.pickup_long.Value - checkpoint.longitude.Value) < 0.05
-                    select b
-                ).ToList();
-
-                if (pendingPickups.Any())
-                    return BadRequest($"Please pickup all {pendingPickups.Count} remaining shipment(s) before confirming.");
-
-                // Verify all drop offs at this checkpoint are done
-                var pendingDropoffs = (
-                    from b in db.Bookings
-                    join s in db.Shipments on b.shipment_id equals s.shipment_id
-                    join t in db.Trips on b.trip_id equals t.trip_id
-                    where b.route_id == routeId
-                       && t.driver_id == driverId
-                       && b.status == "In-Transit"
-                       && s.delivery_lat != null && s.delivery_long != null
-                       && Math.Abs(s.delivery_lat.Value - checkpoint.latitude.Value) < 0.05
-                       && Math.Abs(s.delivery_long.Value - checkpoint.longitude.Value) < 0.05
-                    select b
-                ).ToList();
-
-                if (pendingDropoffs.Any())
-                    return BadRequest($"Please deliver all {pendingDropoffs.Count} remaining shipment(s) before confirming.");
-
-                // All done — mark checkpoint reached
-                checkpoint.reached = true;
-
-                // Check if last checkpoint
-                var lastCheckpoint = db.Checkpoints
-                    .Where(c => c.route_id == routeId)
-                    .OrderByDescending(c => c.sequence_no)
-                    .FirstOrDefault();
-
-                if (lastCheckpoint != null && lastCheckpoint.checkpoint_id == checkpointId)
+                if (trip != null)
                 {
-                    var trip = db.Trips.FirstOrDefault(t =>
-                        t.route_id == routeId && t.status == "In-Transit");
-
-                    if (trip != null)
-                    {
-                        trip.end_time = DateTime.Now;
-                        trip.status = "Completed";
-                    }
-
-                    var activeRoute = db.Routes.FirstOrDefault(r =>
-                        r.route_id == routeId && r.is_active == true);
-
-                    if (activeRoute != null)
-                    {
-                        var nextRoute = db.Routes.FirstOrDefault(r =>
-                            r.driver_id == driverId &&
-                            r.is_next_route == true &&
-                            r.route_id != routeId);
-
-                        activeRoute.is_active = false;
-                        activeRoute.is_next_route = false;
-
-                        if (nextRoute != null)
-                        {
-                            nextRoute.is_active = true;
-                            nextRoute.is_next_route = false;
-                        }
-                    }
+                    trip.end_time = DateTime.Now;
+                    trip.status = "Completed";
                 }
 
-                db.SaveChanges();
+                var activeRoute = db.Routes.FirstOrDefault(r =>
+                    r.route_id == routeId && r.is_active == true);
 
-                return Ok(new
+                if (activeRoute != null)
                 {
-                    message = "Checkpoint confirmed",
-                    checkpoint_id = checkpointId,
-                    checkpoint_name = checkpoint.name
-                });
+                    var nextRoute = db.Routes.FirstOrDefault(r =>
+                        r.driver_id == driverId &&
+                        r.is_next_route == true &&
+                        r.route_id != routeId);
+
+                    activeRoute.is_active = false;
+                    activeRoute.is_next_route = false;
+
+                    if (nextRoute != null)
+                    {
+                        nextRoute.is_active = true;
+                        nextRoute.is_next_route = false;
+                    }
+                }
             }
-            catch (Exception ex)
+
+            db.SaveChanges();
+
+            return Ok(new
             {
-                return InternalServerError(ex);
-            }
+                message = "Checkpoint confirmed",
+                checkpoint_id = checkpointId,
+                checkpoint_name = checkpoint.name
+            });
+
+
         }
         [HttpPost]
         [Route("api/bookings/{bookingId}/pickup")]
-        public IHttpActionResult PickupBooking(int bookingId, int driverId)
+        public IHttpActionResult PickupBooking(int bookingId)
         {
             try
             {
@@ -312,6 +347,10 @@ namespace CargoConnectFinalAPI.Controllers
                 booking.status = "In-Transit";
                 shipment.status = "In-Transit";
 
+                var customer = db.Customer.FirstOrDefault(c => c.customer_id == booking.customer_id);
+                if (customer != null)
+                    NotificationHelper.Send(db, customer.user_id, "Your shipment has been picked up by the driver. View details in the shipments tab.");
+
                 db.SaveChanges();
 
                 return Ok(new { message = "Booking picked up", bookingId = bookingId });
@@ -324,7 +363,7 @@ namespace CargoConnectFinalAPI.Controllers
 
         [HttpPost]
         [Route("api/bookings/{bookingId}/deliver")]
-        public IHttpActionResult DeliverBooking(int bookingId, int driverId)
+        public IHttpActionResult DeliverBooking(int bookingId)
         {
             try
             {
@@ -343,6 +382,11 @@ namespace CargoConnectFinalAPI.Controllers
                 booking.actual_delivery_datetime = DateTime.Now;
                 shipment.status = "Delivered";
 
+                var customer = db.Customer.FirstOrDefault(c => c.customer_id == booking.customer_id);
+                if (customer != null)
+                    NotificationHelper.Send(db, customer.user_id, "Your shipment has successfully been delivered. View details in the shipments tab.");
+
+
                 db.SaveChanges();
 
                 return Ok(new { message = "Booking delivered", bookingId = bookingId });
@@ -356,6 +400,7 @@ namespace CargoConnectFinalAPI.Controllers
         [Route("api/trips/start/{checkpointId}")]
         public IHttpActionResult StartTrip(int checkpointId, int driverId)
         {
+
             try
             {
                 var checkpoint = db.Checkpoints.FirstOrDefault(c => c.checkpoint_id == checkpointId);
@@ -366,12 +411,10 @@ namespace CargoConnectFinalAPI.Controllers
 
                 int routeId = checkpoint.route_id;
 
-                // Verify checkpoint belongs to this driver
                 var route = db.Routes.FirstOrDefault(r => r.route_id == routeId && r.driver_id == driverId);
                 if (route == null)
                     return BadRequest("This checkpoint does not belong to the driver's route");
 
-                // Update trip status
                 var trip = db.Trips.FirstOrDefault(t =>
                     t.route_id == routeId &&
                     t.status == "Scheduled"
@@ -381,9 +424,13 @@ namespace CargoConnectFinalAPI.Controllers
                 {
                     trip.start_time = DateTime.Now;
                     trip.status = "In-Transit";
+
+                    var driver = db.Driver.FirstOrDefault(d => d.driver_id == driverId);
+                    if (driver != null)
+                        NotificationHelper.Send(db, driver.user_id, "Your trip has started. Safe travels!");
+
                 }
 
-                // Set all Assigned bookings + shipments on this route to In-Transit
                 var bookingsToUpdate = (
                     from b in db.Bookings
                     join s in db.Shipments on b.shipment_id equals s.shipment_id
@@ -394,11 +441,11 @@ namespace CargoConnectFinalAPI.Controllers
                     select new { booking = b, shipment = s }
                 ).ToList();
 
-                foreach (var item in bookingsToUpdate)
-                {
-                    item.booking.status = "In-Transit";
-                    item.shipment.status = "In-Transit";
-                }
+                //foreach (var item in bookingsToUpdate)
+                //{
+                //    item.booking.status = "In-Transit";
+                //   // item.shipment.status = "In-Transit";
+                //}
 
                 db.SaveChanges();
 
@@ -415,6 +462,74 @@ namespace CargoConnectFinalAPI.Controllers
             {
                 return InternalServerError(ex);
             }
+        }
+        [HttpPost]
+        [Route("api/driver/add-delay")]
+        public IHttpActionResult AddDelay(int checkpointId, double hours, string reason)
+        {
+            try
+            {
+                var targetCheckpoint = db.Checkpoints.FirstOrDefault(c => c.checkpoint_id == checkpointId);
+
+                if (targetCheckpoint == null)
+                    return BadRequest("Checkpoint not found.");
+
+                int routeId = targetCheckpoint.route_id;
+                int currentSequence = targetCheckpoint.sequence_no;
+
+                var futureCheckpoints = db.Checkpoints
+                    .Where(c => c.route_id == routeId && c.sequence_no >= currentSequence)
+                    .ToList();
+
+                foreach (var cp in futureCheckpoints)
+                {
+                    if (cp.estimated_arrival_datetime.HasValue)
+                    {
+                        cp.estimated_arrival_datetime = cp.estimated_arrival_datetime.Value.AddHours(hours);
+                    }
+                }
+
+                var maxSequence = db.Checkpoints
+                    .Where(c => c.route_id == routeId)
+                    .Max(c => c.sequence_no);
+
+                if (futureCheckpoints.Any(c => c.sequence_no == maxSequence))
+                {
+                    var schedule = db.RouteSchedule.FirstOrDefault(s => s.route_id == routeId);
+                    if (schedule != null && schedule.arrivalDate.HasValue)
+                    {
+                        schedule.arrivalDate = schedule.arrivalDate.Value.AddHours(hours);
+                    }
+                }
+
+                db.SaveChanges();
+
+                return Ok(new
+                {
+                    message = "Delay applied successfully",
+                    affectedCheckpoints = futureCheckpoints.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError();
+            }
+        }
+        [HttpGet]
+        [Route("api/checkpoints/estimated-arrival/{checkpointId}")]
+        public IHttpActionResult GetEstimatedArrivalDate(int checkpointId)
+        {
+            var estimatedTime = db.Checkpoints
+                .Where(c => c.checkpoint_id == checkpointId)
+                .Select(c => c.estimated_arrival_datetime)
+                .FirstOrDefault();
+
+            if (estimatedTime == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(estimatedTime);
         }
 
     }

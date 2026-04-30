@@ -27,7 +27,13 @@ namespace CargoConnectFinalAPI.Controllers
                 x.is_next_route == true);
 
             if (route == null)
-                return BadRequest("No next route found.");
+            {
+                return Ok(new
+                {
+                    checkpoints = new object[] { },
+                    message = "No active route"
+                });
+            }
 
             var schedule = db.RouteSchedule.FirstOrDefault(x => x.route_id == route.route_id);
 
@@ -65,8 +71,13 @@ namespace CargoConnectFinalAPI.Controllers
                 x.is_active == true);
 
             if (route == null)
-                return BadRequest("No active route found.");
-
+            {
+                return Ok(new
+                {
+                    checkpoints = new object[] { },
+                    message = "No active route"
+                });
+            }
             var schedule = db.RouteSchedule.FirstOrDefault(x => x.route_id == route.route_id);
 
             var checkpoints = db.Checkpoints
@@ -94,7 +105,50 @@ namespace CargoConnectFinalAPI.Controllers
                 checkpoints = checkpoints
             });
         }
+        [HttpPost]
+        [Route("api/driver/preview-route-times")]
+        public IHttpActionResult PreviewRouteTimes(CreateRouteRequestDTO request)
+        {
+            if (request.Points == null || request.Points.Count < 2)
+                return BadRequest("Need at least a start and end point.");
 
+            var points = request.Points.OrderBy(p => p.sequenceNo).ToList();
+            double totalDistance = 0;
+
+            for (int i = 0; i < points.Count - 1; i++)
+            {
+                totalDistance += CalculateDistance(points[i].latitude, points[i].longitude,
+                                                   points[i + 1].latitude, points[i + 1].longitude);
+            }
+
+            double totalHours = (request.ArrivalDate - request.DepartureDate).TotalHours;
+            double speed = totalDistance > 0 ? totalDistance / totalHours : 0;
+
+            double cumulativeDistance = 0;
+            var resultPoints = new List<RouteCheckpoint>();
+
+            for (int i = 0; i < points.Count; i++)
+            {
+                if (i > 0)
+                {
+                    cumulativeDistance += CalculateDistance(points[i - 1].latitude, points[i - 1].longitude,
+                                                            points[i].latitude, points[i].longitude);
+                }
+
+                double hoursFromStart = speed > 0 ? cumulativeDistance / speed : 0;
+
+                resultPoints.Add(new RouteCheckpoint
+                {
+                    name = points[i].name,
+                    latitude = points[i].latitude,
+                    longitude = points[i].longitude,
+                    sequenceNo = points[i].sequenceNo,
+                    estimatedArrival = request.DepartureDate.AddHours(hoursFromStart)
+                });
+            }
+
+            return Ok(resultPoints);
+        }
 
         [HttpPost]
         [Route("api/driver/save-route")]
@@ -110,82 +164,72 @@ namespace CargoConnectFinalAPI.Controllers
                (request.ShipmentType.ToLower() != "shared" && request.ShipmentType.ToLower() != "full"))
                 return BadRequest("Invalid shipment type.");
 
-            var activeRoute = db.Routes.FirstOrDefault(x =>
-                x.driver_id == request.DriverId &&
-                x.is_active == true);
+            var activeRoute = db.Routes.FirstOrDefault(x => x.driver_id == request.DriverId && x.is_active == true);
+            var nextRoute = db.Routes.FirstOrDefault(x => x.driver_id == request.DriverId && x.is_next_route == true);
 
-            var nextRoute = db.Routes.FirstOrDefault(x =>
-                x.driver_id == request.DriverId &&
-                x.is_next_route == true);
+            bool makeActive = (activeRoute == null);
+            bool makeNext = (activeRoute != null && nextRoute == null);
 
-            bool makeActive = false;
-            bool makeNext = false;
-
-            if (activeRoute == null)
-                makeActive = true;
-            else if (nextRoute == null)
-                makeNext = true;
-
-            try
+            using (var transaction = db.Database.BeginTransaction())
             {
-                var route = new Routes
+                try
                 {
-                    driver_id = request.DriverId,
-                    is_active = makeActive,
-                    is_next_route = makeNext,
-                    base_fare = request.BaseFare
-                };
-
-                db.Routes.Add(route);
-                db.SaveChanges();
-
-                // Route Schedule
-                db.RouteSchedule.Add(new RouteSchedule
-                {
-                    route_id = route.route_id,
-                    departureDate = request.DepartureDate,
-                    arrivalDate = request.ArrivalDate
-                });
-
-                // Route Preferences
-                db.RoutePreferences.Add(new RoutePreferences
-                {
-                    route_id = route.route_id,
-                    is_fragile = request.IsFragile,
-                    is_liquid = request.IsLiquid,
-                    is_flammable = request.IsFlammable,
-                    keep_upright = request.KeepUpright,
-                    shipment_type = request.ShipmentType
-                });
-
-                // Checkpoints
-                foreach (var cp in request.Points)
-                {
-                    db.Checkpoints.Add(new Checkpoints
+                    var route = new Routes
                     {
-                        name = cp.Name,
-                        latitude = cp.Latitude,
-                        longitude = cp.Longitude,
                         driver_id = request.DriverId,
-                        sequence_no = cp.SequenceNo,
+                        is_active = makeActive,
+                        is_next_route = makeNext,
+                        base_fare = request.BaseFare
+                    };
+                    db.Routes.Add(route);
+                    db.SaveChanges(); 
+
+                    foreach (var pt in request.Points)
+                    {
+                        db.Checkpoints.Add(new Checkpoints
+                        {
+                            route_id = route.route_id,
+                            name = pt.name,
+                            latitude = pt.latitude,
+                            longitude = pt.longitude,
+                            driver_id = request.DriverId,
+                            sequence_no = pt.sequenceNo,
+                            reached = false,
+                            estimated_arrival_datetime = pt.estimatedArrival ?? request.DepartureDate
+                        });
+                    }
+
+                    db.RouteSchedule.Add(new RouteSchedule
+                    {
                         route_id = route.route_id,
-                        reached = false
+                        departureDate = request.DepartureDate,
+                        arrivalDate = request.ArrivalDate
+                    });
+                    db.RoutePreferences.Add(new RoutePreferences
+                    {
+                        route_id = route.route_id,
+                        is_fragile = request.IsFragile,
+                        is_liquid = request.IsLiquid,
+                        is_flammable = request.IsFlammable,
+                        keep_upright = request.KeepUpright,
+                        shipment_type = request.ShipmentType
+                    });
+
+                    db.SaveChanges();
+                    transaction.Commit();
+
+                    return Ok(new
+                    {
+                        routeId = route.route_id,
+                        isActive = route.is_active,
+                        isNext = route.is_next_route
                     });
                 }
-
-                db.SaveChanges();
-
-
-                return Ok(new
+                catch (Exception ex)
                 {
-                    routeId = route.route_id,
-                    isActive = route.is_active,
-                    isNext = route.is_next_route
-                });
-            }
-            catch (Exception)
-            {
-                return InternalServerError();
+                    transaction.Rollback();
+                    return InternalServerError();
+                }
             }
         }
 
@@ -317,5 +361,20 @@ namespace CargoConnectFinalAPI.Controllers
 
             return Ok("Deleted");
         }
+        
+        private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+        {
+            var R = 6371;
+            var dLat = ToRadians(lat2 - lat1);
+            var dLon = ToRadians(lon2 - lon1);
+            var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                    Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
+                    Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            return R * c;
+        }
+
+        private double ToRadians(double val) => (Math.PI / 180) * val;
     }
+
 }

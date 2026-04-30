@@ -28,6 +28,7 @@ namespace CargoConnectFinalAPI.Models
         public int route_id { get; set; }
         public int sequence_no { get; set; }
         public Nullable<bool> reached { get; set; }
+        public Nullable<System.DateTime> estimated_arrival_datetime { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TripCheckpoints> TripCheckpoints { get; set; }

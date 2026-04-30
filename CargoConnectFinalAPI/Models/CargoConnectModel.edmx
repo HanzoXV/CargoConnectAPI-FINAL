@@ -82,6 +82,7 @@
           <Property Name="route_id" Type="int" Nullable="false" />
           <Property Name="sequence_no" Type="int" Nullable="false" />
           <Property Name="reached" Type="bit" />
+          <Property Name="estimated_arrival_datetime" Type="datetime" />
         </EntityType>
         <EntityType Name="Customer">
           <Key>
@@ -1158,6 +1159,7 @@
           <Property Name="route_id" Type="Int32" Nullable="false" />
           <Property Name="sequence_no" Type="Int32" Nullable="false" />
           <Property Name="reached" Type="Boolean" />
+          <Property Name="estimated_arrival_datetime" Type="DateTime" Precision="3" />
           <NavigationProperty Name="TripCheckpoints" Relationship="Self.FK__TripCheck__check__2645B050" FromRole="Checkpoints" ToRole="TripCheckpoints" />
           <NavigationProperty Name="Driver" Relationship="Self.FK_Checkpoints_Driver" FromRole="Checkpoints" ToRole="Driver" />
           <NavigationProperty Name="Routes" Relationship="Self.FK_Checkpoints_Routes" FromRole="Checkpoints" ToRole="Routes" />
@@ -2293,6 +2295,7 @@
                 <ScalarProperty Name="route_id" ColumnName="route_id" />
                 <ScalarProperty Name="sequence_no" ColumnName="sequence_no" />
                 <ScalarProperty Name="reached" ColumnName="reached" />
+                <ScalarProperty Name="estimated_arrival_datetime" ColumnName="estimated_arrival_datetime" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

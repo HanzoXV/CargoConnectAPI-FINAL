@@ -132,6 +132,8 @@ namespace CargoConnectFinalAPI.Controllers
             {
                 id = db.Admin.FirstOrDefault(r => r.user_id == user.user_id)?.admin_id ?? -1;
             }
+
+            NotificationHelper.Send(db, user.user_id, "Welcome to CargoConnect! Your registration was successful.");
             return Ok(new
             {
                 message = "SUCCESS: Registration successful",
