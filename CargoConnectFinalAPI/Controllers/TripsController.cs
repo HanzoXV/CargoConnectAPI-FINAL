@@ -103,18 +103,16 @@ namespace CargoConnectFinalAPI.Controllers
 
             var bookingsData = (
                 from b in db.Bookings
-                join t in db.Trips on b.trip_id equals t.trip_id
                 join s in db.Shipments on b.shipment_id equals s.shipment_id
                 join rd in db.RecipientDetails
-                    on b.shipment_id equals rd.shipment_id into recipientGroup
+                on b.shipment_id equals rd.shipment_id into recipientGroup
                 from r in recipientGroup.DefaultIfEmpty()
                 where b.route_id == routeId
-                   && t.driver_id == driverId
-                   && (b.status == "Assigned" || b.status == "In-Transit")
-                   && s.delivery_lat != null
-                   && s.delivery_long != null
-                   && s.pickup_lat != null
-                   && s.pickup_long != null
+                && (b.status == "Assigned" || b.status == "In-Transit")
+                && s.delivery_lat != null
+                && s.delivery_long != null
+                && s.pickup_lat != null
+                && s.pickup_long != null
                 select new
                 {
                     b.booking_id,
@@ -134,6 +132,7 @@ namespace CargoConnectFinalAPI.Controllers
                     s.sender_contact,
                     s.total_weight,
                     s.package_count,
+                    s.shipment_radius,
 
                     // Recipient
                     recipient_name = r != null ? r.recipient_fname + " " + r.recipient_lname : null,
@@ -179,6 +178,7 @@ namespace CargoConnectFinalAPI.Controllers
                 b.sender_contact,
                 b.total_weight,
                 b.package_count,
+                b.shipment_radius,
 
                 b.recipient_name,
                 b.recipient_contact,
@@ -191,23 +191,25 @@ namespace CargoConnectFinalAPI.Controllers
             double checkpointLat = checkpoint.latitude ?? 0;
             double checkpointLng = checkpoint.longitude ?? 0;
 
-            var toDrop = allBookings
-          .Where(b =>
-              b.status == "In-Transit" && 
-              b.delivery_lat.HasValue && b.delivery_long.HasValue &&
-              Math.Abs(b.delivery_lat.Value - checkpointLat) < 0.02 && 
-              Math.Abs(b.delivery_long.Value - checkpointLng) < 0.02
-          )
-          .ToList();
-
             var toLoad = allBookings
-         .Where(b =>
-             b.status == "Assigned" &&  
-             b.pickup_lat.HasValue && b.pickup_long.HasValue &&
-             Math.Abs(b.pickup_lat.Value - checkpointLat) < 0.02 &&
-             Math.Abs(b.pickup_long.Value - checkpointLng) < 0.02
-         )
-         .ToList();
+    .Where(b =>
+        b.status == "Assigned" &&
+        b.pickup_lat.HasValue && b.pickup_long.HasValue &&
+        CalculateDistance(
+            b.pickup_lat.Value, b.pickup_long.Value,
+            checkpointLat, checkpointLng
+        ) <= (b.shipment_radius ?? 10)
+    ).ToList();
+
+            var toDrop = allBookings
+                .Where(b =>
+                    b.status == "In-Transit" &&
+                    b.delivery_lat.HasValue && b.delivery_long.HasValue &&
+                    CalculateDistance(
+                        b.delivery_lat.Value, b.delivery_long.Value,
+                        checkpointLat, checkpointLng
+                    ) <= (b.shipment_radius ?? 10)
+                ).ToList();
 
             // 9. Final response
             return Ok(new
@@ -244,19 +246,20 @@ namespace CargoConnectFinalAPI.Controllers
             if (route == null)
                 return BadRequest("This checkpoint does not belong to the driver's route");
 
-            // Verify all pickups at this checkpoint are done
             var pendingPickups = (
-                from b in db.Bookings
-                join s in db.Shipments on b.shipment_id equals s.shipment_id
-                join t in db.Trips on b.trip_id equals t.trip_id
-                where b.route_id == routeId
-                   && t.driver_id == driverId
-                   && b.status == "Assigned"
-                   && s.pickup_lat != null && s.pickup_long != null
-                   && Math.Abs(s.pickup_lat.Value - checkpoint.latitude.Value) < 0.02
-                   && Math.Abs(s.pickup_long.Value - checkpoint.longitude.Value) < 0.02
-                select b
-            ).ToList();
+    from b in db.Bookings
+    join s in db.Shipments on b.shipment_id equals s.shipment_id
+    where b.route_id == routeId
+       && b.status == "Assigned"
+       && s.pickup_lat != null && s.pickup_long != null
+    select new { b, s.pickup_lat, s.pickup_long, s.shipment_radius }
+            ).ToList()
+            .Where(x => CalculateDistance(
+                x.pickup_lat.Value, x.pickup_long.Value,
+                checkpoint.latitude.Value, checkpoint.longitude.Value
+                ) <= (x.shipment_radius ?? 10))
+                .Select(x => x.b)
+                .ToList();
 
             if (pendingPickups.Any())
                 return BadRequest($"Please pickup all {pendingPickups.Count} remaining shipment(s) before confirming.");
@@ -264,15 +267,17 @@ namespace CargoConnectFinalAPI.Controllers
             var pendingDropoffs = (
                 from b in db.Bookings
                 join s in db.Shipments on b.shipment_id equals s.shipment_id
-                join t in db.Trips on b.trip_id equals t.trip_id
                 where b.route_id == routeId
-                   && t.driver_id == driverId
                    && b.status == "In-Transit"
                    && s.delivery_lat != null && s.delivery_long != null
-                   && Math.Abs(s.delivery_lat.Value - checkpoint.latitude.Value) < 0.02
-                   && Math.Abs(s.delivery_long.Value - checkpoint.longitude.Value) < 0.02
-                select b
-            ).ToList();
+                select new { b, s.delivery_lat, s.delivery_long, s.shipment_radius }
+            ).ToList()
+            .Where(x => CalculateDistance(
+                x.delivery_lat.Value, x.delivery_long.Value,
+                checkpoint.latitude.Value, checkpoint.longitude.Value
+            ) <= (x.shipment_radius ?? 10))
+            .Select(x => x.b)
+            .ToList();
 
             if (pendingDropoffs.Any())
                 return BadRequest($"Please deliver all {pendingDropoffs.Count} remaining shipment(s) before confirming.");
@@ -464,6 +469,49 @@ namespace CargoConnectFinalAPI.Controllers
             }
         }
         [HttpPost]
+        [Route("api/bookings/{bookingId}/cancel")]
+        public IHttpActionResult CancelBooking(int bookingId)
+        {
+            try
+            {
+                var booking = db.Bookings.FirstOrDefault(b => b.booking_id == bookingId);
+                if (booking == null)
+                    return BadRequest("Booking not found.");
+
+                if (booking.status != "Assigned")
+                    return BadRequest("Only assigned bookings can be canceled.");
+
+                var shipment = db.Shipments.FirstOrDefault(s => s.shipment_id == booking.shipment_id);
+                if (shipment == null)
+                    return BadRequest("Shipment not found.");
+
+                booking.status = "Canceled";
+                shipment.status = "Pending";
+
+                var pickup = shipment.pickup_address ?? "Unknown pickup";
+                var delivery = shipment.delivery_address ?? "Unknown delivery";
+
+                var route = db.Routes.FirstOrDefault(r => r.route_id == booking.route_id);
+                if (route != null)
+                {
+                    var driver = db.Driver.FirstOrDefault(d => d.driver_id == route.driver_id);
+                    if (driver != null)
+                        NotificationHelper.Send(
+                            db,
+                            driver.user_id,
+                            $"Booking #{bookingId} ({pickup} → {delivery}) has been canceled by the customer."
+                        );
+                }
+
+                db.SaveChanges();
+                return Ok(new { message = "Booking canceled successfully.", bookingId = bookingId });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+        [HttpPost]
         [Route("api/driver/add-delay")]
         public IHttpActionResult AddDelay(int checkpointId, double hours, string reason)
         {
@@ -504,6 +552,38 @@ namespace CargoConnectFinalAPI.Controllers
 
                 db.SaveChanges();
 
+                var bookings = db.Bookings
+                    .Where(b => b.route_id == routeId &&
+                        (b.status == "Assigned" || b.status == "In-Transit"))
+                .ToList();
+
+                String time = "";
+                var days = 0;
+                while(hours >= 24)
+                {
+                    days++;
+                    hours -= 24;
+                }
+
+                if(days > 0)
+                    time = $"{days} day(s) and {hours} hour(s). ";
+                else 
+                    time = $"{hours} hour(s). ";
+
+                foreach (Bookings b in bookings)
+                    {
+                        var customer = db.Customer.FirstOrDefault(c => c.customer_id == b.customer_id);
+                        if (customer != null)
+                            NotificationHelper.Send(db, customer.user_id, $"A delay of {time} has been added to your route due to: {reason}. ");
+                    }
+                var route = db.Routes.FirstOrDefault(r => r.route_id == routeId);
+                if (route == null)
+                    return BadRequest("Route not found.");
+
+                var driver = db.Driver.FirstOrDefault(d => d.driver_id == route.driver_id);
+                if (driver != null)
+                    NotificationHelper.Send(db, driver.user_id, $"A delay of {time} has been added to your route due to: {reason}. Updated estimated arrival times have been calculated.");
+
                 return Ok(new
                 {
                     message = "Delay applied successfully",
@@ -531,6 +611,15 @@ namespace CargoConnectFinalAPI.Controllers
 
             return Ok(estimatedTime);
         }
-
+        private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+        {
+            const double R = 6371000;
+            var dLat = (lat2 - lat1) * Math.PI / 180;
+            var dLon = (lon2 - lon1) * Math.PI / 180;
+            var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                    Math.Cos(lat1 * Math.PI / 180) * Math.Cos(lat2 * Math.PI / 180) *
+                    Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+            return R * 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        }
     }
 }

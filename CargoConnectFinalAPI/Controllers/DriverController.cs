@@ -120,10 +120,8 @@ namespace CargoConnectFinalAPI.Controllers
                     return Content(System.Net.HttpStatusCode.BadRequest, "Shipment location missing");
 
                 var isStrict = shipment.strict ?? false;
-                var radius = shipment.shipment_radius ?? 10;
 
-                if (radius >= 100)
-                    radius /= 1000;
+                double radius = (shipment.shipment_radius ?? 10000) / 1000.0;
 
                 double pickupLat = shipment.pickup_lat.Value;
                 double pickupLong = shipment.pickup_long.Value;
@@ -192,10 +190,8 @@ namespace CargoConnectFinalAPI.Controllers
 
                     if (preferences.shipment_type.ToLower() == "full")
                     {
-                        // Driver wants full loads only
                         if (shipmentType.ToLower() != "full") continue;
 
-                        // Check truck is completely empty — no active bookings on this route at all
                         var hasExistingBookings = db.Bookings.Any(b =>
                             b.route_id == route.route_id &&
                             (b.status == "Assigned" || b.status == "In-Transit")
@@ -204,12 +200,9 @@ namespace CargoConnectFinalAPI.Controllers
                     }
                     else if (preferences.shipment_type.ToLower() == "shared")
                     {
-                        // Driver wants shared loads only
                         if (shipmentType.ToLower() != "shared") continue;
-                        // Capacity is already checked in CanDriverAccommodateShipment later
                     }
 
-                    // Get all attribute IDs for this shipment's packages
                     var shipmentAttributeIds = db.PackageAttributeMapping
                         .Where(m => db.Packages
                             .Where(p => p.shipment_id == shipmentId)
@@ -224,22 +217,18 @@ namespace CargoConnectFinalAPI.Controllers
                     bool shipmentIsFlammable = shipmentAttributeIds.Contains(3);
                     bool shipmentIsUpright = shipmentAttributeIds.Contains(4);
 
-                    // If shipment needs fragile handling, driver must accept fragile
                     if (shipmentIsFragile && preferences.is_fragile != true) continue;
 
-                    // If shipment has liquid, driver must accept liquid
                     if (shipmentIsLiquid && preferences.is_liquid != true) continue;
 
-                    // If shipment has flammable, driver must accept flammable
                     if (shipmentIsFlammable && preferences.is_flammable != true) continue;
 
-                    // If shipment needs upright, driver must accept upright
                     if (shipmentIsUpright && preferences.keep_upright != true) continue;
 
                     matchedRouteIds.Add(route.route_id);
                 }
 
-                var result = BuildAvailableTruckDtos(matchedRouteIds, shipmentId, pickupLat, pickupLong, destLat, destLong, requestedDate, isStrict);
+                var result = BuildAvailableTruckDtos(matchedRouteIds, shipmentId, pickupLat, pickupLong, destLat, destLong, requestedDate, isStrict, radius);
                 return Ok(result.OrderByDescending(x => x.Rating).ToList());
             }
             catch (Exception ex)
@@ -248,7 +237,7 @@ namespace CargoConnectFinalAPI.Controllers
             }
         }
 
-        private List<AvailabilityDto> BuildAvailableTruckDtos(List<int> routeIds, int shipmentId, double pickupLat, double pickupLong, double destLat, double destLong, DateTime requestedDate, bool isStrict)
+        private List<AvailabilityDto> BuildAvailableTruckDtos(List<int> routeIds, int shipmentId, double pickupLat, double pickupLong, double destLat, double destLong, DateTime requestedDate, bool isStrict, double radius)
         {
             var result = new List<AvailabilityDto>();
 
@@ -258,68 +247,68 @@ namespace CargoConnectFinalAPI.Controllers
             double shipmentWeight = shipment.total_weight ?? 0;
             double shipmentVolume = CalculateShipmentVolume(shipmentId);
 
-            var routes = db.Routes
-                .Where(r => routeIds.Contains(r.route_id))
-                .ToList();
-
+            var routes = db.Routes.Where(r => routeIds.Contains(r.route_id)).ToList();
             var driverIds = routes.Select(r => r.driver_id).Distinct().ToList();
-
-            var drivers = db.Driver
-                .Where(d => driverIds.Contains(d.driver_id) && d.is_available == true)
-                .ToList();
-
-            var vehicles = db.Vehicle
-                .Where(v => driverIds.Contains(v.driver_id.Value))
-                .ToList();
+            var drivers = db.Driver.Where(d => driverIds.Contains(d.driver_id) && d.is_available == true).ToList();
+            var vehicles = db.Vehicle.Where(v => driverIds.Contains(v.driver_id.Value)).ToList();
 
             double distance = CalculateDistance(pickupLat, pickupLong, destLat, destLong);
 
             foreach (var route in routes)
             {
                 var driver = drivers.FirstOrDefault(d => d.driver_id == route.driver_id);
-                if (driver == null) continue;
-
                 var vehicle = vehicles.FirstOrDefault(v => v.driver_id == route.driver_id);
-                if (vehicle == null) continue;
+                if (driver == null || vehicle == null) continue;
 
                 var checkpoints = db.Checkpoints
                     .Where(c => c.route_id == route.route_id)
                     .OrderBy(c => c.sequence_no)
                     .ToList();
 
-                if (checkpoints.Count == 0) continue;
+                if (checkpoints.Count < 2) continue;
 
-                var pickup = checkpoints.First();
-                var drop = checkpoints.Last();
+                var matchedPickup = checkpoints
+                    .Select(c => new {
+                        Cp = c,
+                        Dist = (c.latitude.HasValue && c.longitude.HasValue)
+                            ? CalculateDistance(pickupLat, pickupLong, (double)c.latitude, (double)c.longitude)
+                            : double.MaxValue
+                    })
+                    .Where(x => x.Dist <= radius)
+                    .OrderBy(x => x.Dist)
+                    .FirstOrDefault()?.Cp;
 
-                var schedule = db.RouteSchedule.FirstOrDefault(s => s.route_id == route.route_id);
+                var matchedDrop = checkpoints
+                    .Select(c => new {
+                        Cp = c,
+                        Dist = (c.latitude.HasValue && c.longitude.HasValue)
+                            ? CalculateDistance(destLat, destLong, (double)c.latitude, (double)c.longitude)
+                            : double.MaxValue
+                    })
+                    .Where(x => x.Dist <= radius)
+                    .OrderBy(x => x.Dist)
+                    .FirstOrDefault()?.Cp;
+
+                if (matchedPickup == null || matchedDrop == null || matchedPickup.sequence_no >= matchedDrop.sequence_no)
+                    continue;
+
                 var preferences = db.RoutePreferences.FirstOrDefault(p => p.route_id == route.route_id);
                 var ratingData = GetDriverRating(driver.driver_id);
                 bool canAccommodate = CanDriverAccommodateShipment(driver.driver_id, shipmentId, requestedDate);
 
                 double baseFare = (double)(route.base_fare ?? 0);
-                
                 double maxWeight = vehicle.weight_capacity ?? 0;
-
                 double totalCapacity = (double)vehicle.weight_capacity;
-
                 double price = 0;
 
                 string prefType = preferences?.shipment_type?.ToLower() ?? "shared";
-
                 if (prefType == "full")
                 {
-                    // Full truck — price based on entire truck capacity
-                    double a = baseFare * maxWeight;
-                    double b = baseFare * totalCapacity;
-                    price = (a >= b) ? a : b;
+                    price = baseFare * Math.Max(maxWeight, totalCapacity);
                 }
                 else
                 {
-                    // Shared — price based on this shipment's weight and volume only
-                    double w = baseFare * shipmentWeight;
-                    double a = baseFare * shipmentVolume;
-                    price = (w >= a) ? w : a;
+                    price = baseFare * Math.Max(shipmentWeight, shipmentVolume);
                 }
 
                 result.Add(new AvailabilityDto
@@ -331,27 +320,22 @@ namespace CargoConnectFinalAPI.Controllers
                     destLong = destLong,
                     requestedDate = requestedDate,
                     isStrict = isStrict,
-
                     DriverId = driver.driver_id,
-                    DriverName = driver.first_name + " " + driver.last_name,
+                    DriverName = $"{driver.first_name} {driver.last_name}",
                     ContactNo = driver.contact_no,
-
                     TruckModel = vehicle.model ?? "Unknown",
                     LicenseNo = vehicle.vehicle_reg_no ?? "Unknown",
                     TotalCapacity = Math.Round(totalCapacity, 2),
-
-                    PickupCity = pickup.name ?? "Unknown",
-                    DestinationCity = drop.name ?? "Unknown",
-
+                    PickupCity = matchedPickup.name ?? "Unknown",
+                    DestinationCity = matchedDrop.name ?? "Unknown",
                     Price = Math.Round(price, 0),
                     IsFull = !canAccommodate,
                     RouteId = route.route_id,
                     Distance = Math.Round(distance, 2),
                     Rating = ratingData.rating,
                     TotalReviews = ratingData.totalReviews,
-
-                    DepartureDate = schedule?.departureDate ?? DateTime.Now,
-                    ArrivalDate = schedule?.arrivalDate ?? DateTime.Now,
+                    DepartureDate = matchedPickup.estimated_arrival_datetime ?? DateTime.Now,
+                    ArrivalDate = matchedDrop.estimated_arrival_datetime ?? DateTime.Now,
                 });
             }
 
@@ -366,7 +350,6 @@ namespace CargoConnectFinalAPI.Controllers
             double maxWeight = vehicle.weight_capacity ?? 0;
             double maxVolume = (vehicle.length ?? 0) * (vehicle.width ?? 0) * (vehicle.height ?? 0);
 
-            // Get BOTH active and next routes for this driver
             var driverRoutes = db.Routes
                 .Where(r => r.driver_id == driverId && (r.is_active == true || r.is_next_route == true))
                 .Select(r => r.route_id)
@@ -374,7 +357,6 @@ namespace CargoConnectFinalAPI.Controllers
 
             if (!driverRoutes.Any()) return false;
 
-            // Sum bookings across both routes on the requested date
             var activeBookings = db.Bookings
                 .Where(b =>
                     driverRoutes.Contains(b.route_id) &&
@@ -467,7 +449,7 @@ namespace CargoConnectFinalAPI.Controllers
         public IHttpActionResult SendRequest(int shipmentId, int driverId, int routeId, double fare)
         {
             var exists = db.Requests.FirstOrDefault(r =>
-                r.shipment_id == shipmentId &&  // add this
+                r.shipment_id == shipmentId && 
                 r.driver_id == driverId &&
                 r.status == "Pending"
             );

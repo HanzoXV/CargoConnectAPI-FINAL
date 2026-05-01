@@ -207,39 +207,50 @@ namespace CargoConnectFinalAPI.Controllers
         {
             var shipments = db.Shipments
                 .Where(s => s.customer_id == customerId && s.status == "Pending")
-                .Select(s => new ShipmentDto
-                {
-                    shipment_id = s.shipment_id,
-                    pickup_address = s.pickup_address,
-                    delivery_address = s.delivery_address,
-                    status = s.status,
-                    sender_name = s.sender_name,
-                    sender_contact = s.sender_contact,
-                    total_weight = s.total_weight,
-                    strict = s.strict,
-                    shipment_radius = s.shipment_radius,
-                    shipment_type = s.shipment_type,
-                    booking_date = s.pickup_date.ToString(),
-                    packages = db.Packages
-                        .Where(p => p.shipment_id == s.shipment_id)
-                        .Select(p => new PackageDto
-                        {
-                            shipment_id = p.shipment_id,
-                            name = p.name,
-                            weight = p.weight,
-                            length = p.length,
-                            width = p.width,
-                            height = p.height,
-                            quantity = p.quantity,
-                            color = p.color,
-                            tagNo = p.tagNo
-                        }).ToList()
+                .AsEnumerable()
+                .Select(s => {
+                    // Fetch recipient details for this specific shipment
+                    var recipient = db.RecipientDetails.FirstOrDefault(rd => rd.shipment_id == s.shipment_id);
+
+                    return new ShipmentDto
+                    {
+                        shipment_id = s.shipment_id,
+                        pickup_address = s.pickup_address,
+                        delivery_address = s.delivery_address,
+                        status = s.status,
+                        sender_name = s.sender_name,
+                        sender_contact = s.sender_contact,
+                        total_weight = s.total_weight,
+                        strict = s.strict,
+
+                        recipient_fname = recipient?.recipient_fname ?? "N/A",
+                        recipient_lname = recipient?.recipient_lname ?? "N/A",
+                        recipient_contact = recipient?.recipient_contact ?? "N/A",
+
+                        shipment_radius = s.shipment_radius,
+                        shipment_type = s.shipment_type,
+                        booking_date = s.pickup_date?.ToString("yyyy-MM-dd") ?? "Not Set",
+
+                        packages = db.Packages
+                            .Where(p => p.shipment_id == s.shipment_id)
+                            .Select(p => new PackageDto
+                            {
+                                shipment_id = p.shipment_id,
+                                name = p.name,
+                                weight = p.weight,
+                                length = p.length,
+                                width = p.width,
+                                height = p.height,
+                                quantity = p.quantity,
+                                color = p.color ?? "Not Assigned Yet",
+                                tagNo = p.tagNo ?? "Not Assigned Yet"
+                            }).ToList()
+                    };
                 })
                 .ToList();
 
             return Ok(shipments);
         }
-
         [HttpGet]
         [Route("api/customers/{customerId}/bookings")]
         public IHttpActionResult GetCustomerBookings(int customerId)
