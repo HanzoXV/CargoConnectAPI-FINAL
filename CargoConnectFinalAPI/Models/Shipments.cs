@@ -18,7 +18,6 @@ namespace CargoConnectFinalAPI.Models
         public Shipments()
         {
             this.Bookings = new HashSet<Bookings>();
-            this.ChatThreads = new HashSet<ChatThreads>();
             this.Packages = new HashSet<Packages>();
             this.RecipientDetails = new HashSet<RecipientDetails>();
             this.Requests = new HashSet<Requests>();
@@ -44,8 +43,6 @@ namespace CargoConnectFinalAPI.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Bookings> Bookings { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ChatThreads> ChatThreads { get; set; }
         public virtual Customer Customer { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Packages> Packages { get; set; }

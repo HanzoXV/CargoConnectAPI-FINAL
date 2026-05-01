@@ -61,6 +61,10 @@ namespace CargoConnectFinalAPI.Controllers
                     sender_contact = s.sender_contact,
                     total_weight = s.total_weight,
                     package_count = s.package_count,
+                    customer_user_id = db.Customer                          // ← add this
+                        .Where(c => c.customer_id == b.customer_id)
+                        .Select(c => (int?)c.user_id)
+                        .FirstOrDefault(),
 
                     // Recipient details (null safe)
                     recipient_name = r != null ? r.recipient_fname + " " + r.recipient_lname : null,
@@ -351,6 +355,7 @@ namespace CargoConnectFinalAPI.Controllers
 
                 booking.status = "In-Transit";
                 shipment.status = "In-Transit";
+                booking.pickup_date = DateTime.Now;
 
                 var customer = db.Customer.FirstOrDefault(c => c.customer_id == booking.customer_id);
                 if (customer != null)
@@ -487,6 +492,7 @@ namespace CargoConnectFinalAPI.Controllers
 
                 booking.status = "Canceled";
                 shipment.status = "Pending";
+                booking.cancel_reason = "Canceled by customer";
 
                 var pickup = shipment.pickup_address ?? "Unknown pickup";
                 var delivery = shipment.delivery_address ?? "Unknown delivery";
@@ -502,6 +508,7 @@ namespace CargoConnectFinalAPI.Controllers
                             $"Booking #{bookingId} ({pickup} → {delivery}) has been canceled by the customer."
                         );
                 }
+
 
                 db.SaveChanges();
                 return Ok(new { message = "Booking canceled successfully.", bookingId = bookingId });

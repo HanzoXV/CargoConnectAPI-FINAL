@@ -209,7 +209,6 @@ namespace CargoConnectFinalAPI.Controllers
                 .Where(s => s.customer_id == customerId && s.status == "Pending")
                 .AsEnumerable()
                 .Select(s => {
-                    // Fetch recipient details for this specific shipment
                     var recipient = db.RecipientDetails.FirstOrDefault(rd => rd.shipment_id == s.shipment_id);
 
                     return new ShipmentDto
@@ -302,6 +301,7 @@ namespace CargoConnectFinalAPI.Controllers
                     arrival_date = rs != null ? rs.arrivalDate : null,
 
                     // Driver
+                    driver_user_id = d != null ? (int?)d.user_id : null,
                     driver_name = d != null ? d.first_name + " " + d.last_name : null,
                     driver_contact = d != null ? d.contact_no : null,
                     license_no = d != null ? d.licence_no : null,

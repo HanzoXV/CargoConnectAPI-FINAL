@@ -21,16 +21,11 @@ namespace CargoConnectFinalAPI.Models
         }
     
         public int thread_id { get; set; }
-        public string thread_type { get; set; }
-        public Nullable<int> shipment_id { get; set; }
-        public int created_by_user_id { get; set; }
-        public Nullable<int> assigned_admin_id { get; set; }
-        public string status { get; set; }
+        public int customer_user_id { get; set; }
+        public int driver_user_id { get; set; }
+        public Nullable<System.DateTime> created_at { get; set; }
     
-        public virtual Admin Admin { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChatMessages> ChatMessages { get; set; }
-        public virtual Users Users { get; set; }
-        public virtual Shipments Shipments { get; set; }
     }
 }

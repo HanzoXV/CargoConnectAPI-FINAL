@@ -14,12 +14,6 @@ namespace CargoConnectFinalAPI.Models
     
     public partial class ChatMessages
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public ChatMessages()
-        {
-            this.ChatAttachments = new HashSet<ChatAttachments>();
-        }
-    
         public int message_id { get; set; }
         public int thread_id { get; set; }
         public int sender_user_id { get; set; }
@@ -27,9 +21,6 @@ namespace CargoConnectFinalAPI.Models
         public Nullable<bool> is_read { get; set; }
         public Nullable<System.DateTime> sent_at { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ChatAttachments> ChatAttachments { get; set; }
-        public virtual Users Users { get; set; }
         public virtual ChatThreads ChatThreads { get; set; }
     }
 }

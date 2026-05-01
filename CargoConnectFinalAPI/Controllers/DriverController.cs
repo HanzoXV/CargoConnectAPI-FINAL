@@ -771,7 +771,64 @@ namespace CargoConnectFinalAPI.Controllers
                 return InternalServerError(ex);
             }
         }
+        [HttpGet]
+        [Route("api/drivers/{driverId}/truck-info")]
+        public IHttpActionResult GetTruckInfo(int driverId)
+        {
+            try
+            {
+                var vehicle = db.Vehicle.FirstOrDefault(v => v.driver_id == driverId);
+                if (vehicle == null)
+                    return BadRequest("No vehicle assigned to this driver");
 
+                var activeShipments = (from b in db.Bookings
+                                       join p in db.Packages on b.shipment_id equals p.shipment_id
+                                       where b.status == "In-Transit"
+                                       
+                                       select p).ToList();
+
+                double usedWeight = activeShipments.Sum(p => (double)(p.weight ?? 0) * (p.quantity ?? 1));
+                double usedLength = activeShipments.Sum(p => (double)(p.length ?? 0) * (p.quantity ?? 1));
+                double usedWidth = activeShipments.Sum(p => (double)(p.width ?? 0) * (p.quantity ?? 1));
+                double usedHeight = activeShipments.Sum(p => (double)(p.height ?? 0) * (p.quantity ?? 1));
+
+                double maxWeight = (double)(vehicle.weight_capacity ?? 0);
+                double maxLength = (double)(vehicle.length ?? 0);
+                double maxWidth = (double)(vehicle.width ?? 0);
+                double maxHeight = (double)(vehicle.height ?? 0);
+
+                return Ok(new
+                {
+                    vehicle_model = vehicle.model,
+                    reg_no = vehicle.vehicle_reg_no,
+
+                    weight = new
+                    {
+                        max_capacity = maxWeight,
+                        used_capacity = usedWeight,
+                        remaining_capacity = maxWeight - usedWeight
+                    },
+
+                    dimensions = new
+                    {
+                        max_dimensions = new { l = maxLength, w = maxWidth, h = maxHeight },
+                        used_dimensions = new { l = usedLength, w = usedWidth, h = usedHeight },
+                        remaining_dimensions = new
+                        {
+                            l = Math.Max(0, maxLength - usedLength),
+                            w = Math.Max(0, maxWidth - usedWidth),
+                            h = Math.Max(0, maxHeight - usedHeight)
+                        }
+                    },
+
+                    active_package_count = activeShipments.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
     }
 
 }

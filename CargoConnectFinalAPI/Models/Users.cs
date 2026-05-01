@@ -18,8 +18,6 @@ namespace CargoConnectFinalAPI.Models
         public Users()
         {
             this.Admin = new HashSet<Admin>();
-            this.ChatMessages = new HashSet<ChatMessages>();
-            this.ChatThreads = new HashSet<ChatThreads>();
             this.Customer = new HashSet<Customer>();
             this.Driver = new HashSet<Driver>();
             this.Notifications = new HashSet<Notifications>();
@@ -40,10 +38,6 @@ namespace CargoConnectFinalAPI.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Admin> Admin { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ChatMessages> ChatMessages { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ChatThreads> ChatThreads { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Customer> Customer { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

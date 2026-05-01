@@ -17,7 +17,6 @@ namespace CargoConnectFinalAPI.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Admin()
         {
-            this.ChatThreads = new HashSet<ChatThreads>();
             this.UserSuspensions = new HashSet<UserSuspensions>();
         }
     
@@ -31,8 +30,6 @@ namespace CargoConnectFinalAPI.Models
         public string city { get; set; }
     
         public virtual Users Users { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ChatThreads> ChatThreads { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserSuspensions> UserSuspensions { get; set; }
     }

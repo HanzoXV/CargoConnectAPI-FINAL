@@ -27,7 +27,6 @@ namespace CargoConnectFinalAPI.Models
     
         public virtual DbSet<Admin> Admin { get; set; }
         public virtual DbSet<Bookings> Bookings { get; set; }
-        public virtual DbSet<ChatAttachments> ChatAttachments { get; set; }
         public virtual DbSet<ChatMessages> ChatMessages { get; set; }
         public virtual DbSet<ChatThreads> ChatThreads { get; set; }
         public virtual DbSet<Checkpoints> Checkpoints { get; set; }
